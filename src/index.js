@@ -55,20 +55,39 @@ async function handleUpdate(update, env) {
   const userId = String(message.from.id);
   const text = message.text.trim();
 
-  if (/^\/start(?:@\w+)?(?:\s|$)/i.test(text) || /^\/start(?:@\w+)?$/i.test(text)) {
+  if (/^\/start(?:@\w+)?(?:\s|$)/i.test(text)) {
     await env.DB.prepare(
       "INSERT OR IGNORE INTO users(user_id,first_name) VALUES(?,?)"
     ).bind(userId, message.from.first_name || "").run();
 
-    return send(env, userId,
-      "Crypto Bot — независимый демонстрационный Mini App. Балансы условные, реальные криптовалюты и переводы не поддерживаются.",
-      {
-        inline_keyboard: [[{
-          text: "Открыть приложение",
-          web_app: { url: env.WEBAPP_URL }
-        }]]
-      }
-    );
+    if (!env.WEBAPP_URL) throw new Error("WEBAPP_URL secret is missing");
+
+    const appButton = (label, screen) => ({
+      text: label,
+      web_app: { url: withScreen(env.WEBAPP_URL, screen) }
+    });
+
+    const keyboard = {
+      keyboard: [
+        [appButton("👛 Кошелёк", "wallet"), appButton("🔁 Обмен", "exchange")],
+        [appButton("🟦 P2P", "p2p"), appButton("📊 Биржа", "market")],
+        [appButton("🧾 Чеки", "history"), appButton("📥 Счета", "deposit")],
+        [appButton("💳 Crypto Pay", "profile"), appButton("🎁 Розыгрыши", "profile")],
+        [appButton("📣 Подписки", "profile"), appButton("⚙️ Настройки", "profile")]
+      ],
+      resize_keyboard: true,
+      is_persistent: true,
+      input_field_placeholder: "Выберите раздел Crypto Bot"
+    };
+
+    const welcome =
+      "🔷 <b>Мультивалютный криптокошелёк.</b>\n" +
+      "Покупайте, продавайте, храните, отправляйте криптовалюту и платите ею, когда хотите.\n\n" +
+      "Подписывайтесь на наш канал и вступайте в наш чат.\n\n" +
+      "🍂 Осенний фестиваль с 🔷 <b>Crypto Bot!</b>\n" +
+      "<b>Получить баллы ›</b>";
+
+    return send(env, userId, welcome, keyboard, "HTML");
   }
 
   if (/^\/balance(?:@\w+)?$/i.test(text)) {
@@ -82,7 +101,7 @@ async function handleUpdate(update, env) {
     );
   }
 
-  if (/^\/obves(?:@\w+)?(?:\s|$)/i.test(text) || /^\/obves(?:@\w+)?$/i.test(text)) {
+  if (/^\/obves(?:@\w+)?(?:\s|$)/i.test(text)) {
     const admins = (env.ADMIN_IDS || "").split(",").map(value => value.trim());
     if (!admins.includes(userId)) {
       return send(env, userId, "Команда доступна только администратору демо-бота.");
@@ -116,14 +135,39 @@ async function handleUpdate(update, env) {
       "\nНовый баланс: " + row.amount + " " + currency
     );
   }
+
+  const menuRoutes = {
+    "👛 Кошелёк": "wallet",
+    "🔁 Обмен": "exchange",
+    "🟦 P2P": "p2p",
+    "📊 Биржа": "market",
+    "🧾 Чеки": "history",
+    "📥 Счета": "deposit",
+    "💳 Crypto Pay": "profile",
+    "🎁 Розыгрыши": "profile",
+    "📣 Подписки": "profile",
+    "⚙️ Настройки": "profile"
+  };
+  if (menuRoutes[text]) {
+    return send(env, userId, "Откройте раздел через кнопку меню ниже.");
+  }
 }
 
-async function send(env, chatId, text, replyMarkup) {
+function withScreen(base, screen) {
+  const url = new URL(base);
+  url.searchParams.set("screen", screen);
+  return url.toString();
+}
+
+async function send(env, chatId, text, replyMarkup, parseMode) {
   if (!env.BOT_TOKEN) throw new Error("BOT_TOKEN secret is missing");
+  const body = { chat_id: chatId, text };
+  if (replyMarkup) body.reply_markup = replyMarkup;
+  if (parseMode) body.parse_mode = parseMode;
   const response = await fetch("https://api.telegram.org/bot" + env.BOT_TOKEN + "/sendMessage", {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ chat_id: chatId, text, reply_markup: replyMarkup })
+    body: JSON.stringify(body)
   });
   const result = await response.json();
   if (!response.ok || !result.ok) {
