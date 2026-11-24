@@ -41,7 +41,12 @@ function openDemoTopup(currency){
 }
 async function submitDemoTopup(currency){
  const amount=Number(document.getElementById("demoAmount")?.value),cardNumber=document.getElementById("demoCardNumber")?.value||"",expiry=document.getElementById("demoCardExpiry")?.value||"",cvv=document.getElementById("demoCardCvv")?.value||"";
- if(!Number.isFinite(amount)||amount<=0){notice("Укажи корректную сумму");return;}
+ const normalizedCard=cardNumber.replace(/\\s/g,"");
+ if(!Number.isFinite(amount)||amount<0.01||amount>100000){notice("Укажи сумму от 0,01 до 100 000");return;}
+ if(normalizedCard!=="4242424242424242"||expiry!=="12/30"||cvv!=="123"){
+  showModal("Платёж отклонён","Данные не прошли проверку. Для демонстрации подходят только тестовые реквизиты: 4242 4242 4242 4242 · 12/30 · 123. Реальные карты не принимаются.");
+  return;
+ }
  try{
   const created=await apiDemo("payment/create",{currency,amount,cardNumber,expiry,cvv});
   showModal("Проверка платежа","Платёж № "+created.paymentId.slice(0,8)+" создан. Проверяем тестовую операцию…",'<div class="payment-status"><span class="payment-spinner"></span><b>Проверяем платёж</b><small>Проверка тестовых реквизитов</small></div><button class="primary" id="confirmDemoPayment" disabled>Проверка…</button>');
