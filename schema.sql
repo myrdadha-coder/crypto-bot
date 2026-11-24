@@ -20,3 +20,16 @@ CREATE TABLE IF NOT EXISTS demo_transactions (
 );
 CREATE INDEX IF NOT EXISTS idx_demo_transactions_user_created
 ON demo_transactions(user_id, created_at DESC);
+
+CREATE TABLE IF NOT EXISTS demo_payments (
+  payment_id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  currency TEXT NOT NULL,
+  amount REAL NOT NULL,
+  status TEXT NOT NULL,
+  card_last4 TEXT NOT NULL DEFAULT '4242',
+  created_at INTEGER NOT NULL,
+  paid_at INTEGER
+);
+CREATE INDEX IF NOT EXISTS idx_demo_payments_user_created
+ON demo_payments(user_id, created_at DESC);
