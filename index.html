@@ -53,8 +53,15 @@ async function submitDemoBuy(offerId){
  try{const result=await apiDemo("buy",{offerId,quantity});closeModal();await refreshDemoState();showModal("Покупка успешна","Демо-покупка: "+money(result.quantity)+" USDT. Списано "+money(result.total)+" USDT с внутреннего демо-баланса. Реальная оплата не производилась.");}
  catch(e){showModal("Покупка не выполнена",e.message);}
 }
-document.querySelectorAll("#p2pTabs button").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll("#p2pTabs button").forEach(x=>x.classList.remove("selected"));b.classList.add("selected");if(b.dataset.kind==="sell")showModal("Продажа USDT","Демо-раздел продажи будет подключён отдельно. Сейчас доступны тестовые покупки из списка объявлений.");}));
-refreshDemoState();
+function initDemoUi(){
+ document.querySelectorAll("#p2pTabs button").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll("#p2pTabs button").forEach(x=>x.classList.remove("selected"));
+  b.classList.add("selected");
+  renderP2P();
+ }));
+ refreshDemoState();
+}
+window.addEventListener("DOMContentLoaded",initDemoUi,{once:true});
 
 </script>
 <style>
