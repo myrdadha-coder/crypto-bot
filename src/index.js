@@ -53,8 +53,10 @@ export default {
         const amount = Number(body.amount), currency = String(body.currency || "USDT").toUpperCase();
         const cardNumber = String(body.cardNumber || "").replace(/\\D/g, "");
         const expiry = String(body.expiry || ""), cvv = String(body.cvv || "");
-        if (!["USDT","BTC","GRAM","TON","ETH","SOL","TRX"].includes(currency) || !Number.isFinite(amount) || amount <= 0 || amount > 100000 || !/^4242424242424242$/.test(cardNumber) || !/^12\\/30$/.test(expiry) || cvv !== "123") {
-          return demoJson({ error:"Используй только тестовую карту: 4242 4242 4242 4242, 12/30, 123. Реальные карты не принимаются." },request,{status:400});
+        const validTestCard = cardNumber === "4242424242424242" && expiry === "12/30" && cvv === "123";
+        const validAmount = Number.isFinite(amount) && amount >= 0.01 && amount <= 100000 && Math.round(amount * 100000000) / 100000000 === amount;
+        if (!["USDT","BTC","GRAM","TON","ETH","SOL","TRX"].includes(currency) || !validAmount || !validTestCard) {
+          return demoJson({ error:"Платёж отклонён. Доступна только тестовая карта 4242 4242 4242 4242, срок 12/30, CVV 123. Проверь сумму. Реальные карты не принимаются." },request,{status:400});
         }
         const paymentId = crypto.randomUUID();
         await env.DB.prepare("INSERT INTO demo_payments(payment_id,user_id,currency,amount,status,card_last4,created_at) VALUES(?,?,?,?,?,?,?)").bind(paymentId,userId,currency,amount,"pending","4242",Date.now()).run();
