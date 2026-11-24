@@ -1,11 +1,24 @@
-<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><meta name="theme-color" content="#15212b"><title>Crypto Bot Demo</title><style>
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><meta name="theme-color" content="#15212b"><title>Crypto Bot</title><style>
 :root{--bg:#15212b;--panel:#202e3b;--blue:#42a9e3;--muted:#929ba6;--text:#f4f7fb}*{box-sizing:border-box}body{margin:0;background:#0b1117;color:var(--text);font:16px -apple-system,BlinkMacSystemFont,sans-serif}.app{max-width:520px;min-height:100dvh;margin:auto;background:var(--bg);padding:16px 16px 100px}header{text-align:center;font-weight:700;font-size:20px;padding:12px}.demo{background:#3a2a1b;color:#ffb35c;border-radius:12px;padding:12px;font-size:12px;margin:12px 0}.screen{display:none}.screen.active{display:block}.balance{text-align:center;padding:24px 0}.amount{font-size:40px;font-weight:750}.muted,.sub{color:var(--muted)}.card{background:var(--panel);border-radius:18px;padding:16px;margin:12px 0}.asset{display:flex;justify-content:space-between;padding:14px 0;border-bottom:1px solid #394754}.tabs{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);width:min(490px,calc(100% - 24px));display:flex;justify-content:space-around;background:#293747;border-radius:30px;padding:8px}.nav{border:0;background:transparent;color:#d3dce6;padding:8px 5px;font-size:12px}.nav.active{color:var(--blue)}.title{color:var(--blue);font-size:18px;margin:20px 4px 10px}.hero{text-align:center;padding:30px 8px}.big{font-size:48px;color:var(--blue)}button{cursor:pointer}
-</style></head><body><div class="app"><header>Crypto Bot <div class="sub" style="font-size:11px">DEMO · независимый проект</div></header><div class="demo">ДЕМО-РЕЖИМ · Баланс начисляется командой администратора /obves. Реальные переводы и торговля отключены.</div>
-<section id="wallet" class="screen active"><div class="balance"><div class="amount" id="total">$ 0.00</div><div class="sub">Общий баланс в USD</div><div class="sub" id="who">Демо-профиль</div></div><div class="title">Мои активы</div><div class="card" id="assets"></div></section>
-<section id="market" class="screen"><div class="title">Биржа</div><div class="card"><div class="hero"><div class="big">₿</div><h2>BTC / USDT</h2><div class="amount">$67,420.50</div><div class="sub">Демо-рынок · торговля отключена</div></div></div></section>
-<section id="exchange" class="screen"><div class="hero"><div class="big">⇄</div><h2>Обмен</h2><p class="muted">Демонстрационная конвертация</p><div class="card">Реальный обмен отключён</div></div></section>
-<section id="p2p" class="screen"><div class="hero"><div class="big">▣</div><h2>P2P Маркет</h2><p class="muted">Реальные объявления и переводы отключены.</p></div></section>
-<section id="account" class="screen"><div class="title">Аккаунт</div><div class="card">Демо-пользователь<br><span class="muted">Независимый проект</span></div></section>
+
+body{background:#101820}.app{background:#101820;padding-top:6px}
+header{text-align:left;padding:16px 2px;font-size:21px}
+.demo{background:transparent;color:#9eabb6;border:0;border-top:1px solid #2b3945;border-radius:0;padding:9px 2px;font-size:10px;margin:4px 0 12px;text-align:center}
+.balance{text-align:left;padding:20px 18px;background:linear-gradient(135deg,#1c4055,#1d2d3b);border-radius:20px;margin:10px 0 16px}
+.amount{font-size:36px}.balance .sub{color:#c1d2de}
+.card{background:#1b2732;border:1px solid #ffffff08;border-radius:17px;padding:8px 15px}
+.asset{align-items:center;padding:14px 0}.asset b{font-size:14px}
+.title{color:#f4f7fb;font-weight:700;font-size:17px;margin:20px 3px 10px}
+.hero{padding:22px 8px}.big{font-size:42px}
+.tabs{background:#1c2a35ed;backdrop-filter:blur(16px);border:1px solid #ffffff10;border-radius:20px;box-shadow:0 8px 30px #0005}
+.nav{min-width:55px;padding:7px 4px}
+.notice{font-size:10px;color:#9aa8b3;text-align:center;padding:14px 8px 4px;line-height:1.45}
+</style></head><body><div class="app"><header>Crypto Bot <div class="sub" style="font-size:11px">Crypto Bot</div></header><div class="demo">Виртуальный баланс · операции с реальными средствами недоступны</div>
+<section id="wallet" class="screen active"><div class="balance"><div class="sub">Общий баланс · USD</div><div class="amount" id="total">$ 0.00</div><div class="sub" id="who">Профиль Telegram</div></div><div class="notice">Виртуальный баланс. Пополнение, вывод и реальные сделки недоступны.</div><div class="title">Мои активы</div><div class="card" id="assets"></div></section>
+<section id="market" class="screen"><div class="title">Биржа</div><div class="card"><div class="hero"><div class="big">₿</div><h2>Bitcoin / USD</h2><div class="amount">$67,420.50</div><div style="color:#35c98a;font-size:12px">+2.45% за 24 ч.</div><svg viewBox="0 0 320 80" width="100%" height="80"><path d="M0 65 L25 56 50 62 75 39 100 48 125 28 150 42 175 21 200 32 225 15 250 28 275 12 320 5" fill="none" stroke="#42a9e3" stroke-width="2.5"/></svg></div></div></section>
+<section id="exchange" class="screen"><div class="hero"><div class="big">⇄</div><h2>Обмен активов</h2><p class="muted">Предварительный расчёт по справочным курсам</p><div class="card">Функция обмена пока недоступна</div></div></section>
+<section id="p2p" class="screen"><div class="hero"><div class="big">▣</div><h2>P2P Маркет</h2><div class="card">Покупка · Продажа · Мои объявления<br><span class="muted">P2P-сделки пока недоступны</span></div></div></section>
+<section id="account" class="screen"><div class="title">Аккаунт</div><div class="card">Профиль пользователя<br><span class="muted">Независимый проект</span></div></section>
 <nav class="tabs"><button class="nav active" data-id="wallet">▣<br>Кошелёк</button><button class="nav" data-id="market">Ⅱ<br>Биржа</button><button class="nav" data-id="exchange">⇄<br>Обмен</button><button class="nav" data-id="p2p">▦<br>P2P</button><button class="nav" data-id="account">ⓧ<br>Аккаунт</button></nav></div>
 <script>
 const coins={USDT:["Tether",1],GRAM:["Gram",.97],SOL:["Solana",70.71],TRX:["TRON",.308],BTC:["Bitcoin",67420.5],ETH:["Ethereum",3510],TON:["Toncoin",3.4]};let balances={};
