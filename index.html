@@ -27,7 +27,7 @@ async function refreshDemoState(){
     const balance=document.getElementById("balanceValue");
     if(balance) balance.textContent=balanceVisible?"$ "+money(demoBalances.USDT):"••••••";
     const wallet=document.getElementById("walletAssets");
-    if(wallet){wallet.querySelectorAll(".asset-row").forEach(row=>{const symbol=row.querySelector(".coin-name")?.textContent;const c=coins.find(x=>x[1]===symbol);if(c){const amount=money(demoBalances[c[2]]);row.querySelector(".asset-right").innerHTML='<span class="asset-amount">'+amount+'</span> <span class="asset-currency">'+c[2]+'</span><small>$<span class="asset-usd">'+(c[2]==="USDT"?amount:"0")+'</span></small>';}});}
+    if(wallet){refreshWalletAssetBalances();}
     renderP2P();
   }catch(e){console.warn("Demo state unavailable:",e.message);}
 }
@@ -206,6 +206,13 @@ html,body{background:#17212b}
 .dots{margin:-10px 0 20px}
 .asset-card,.card,.list-card,.settings-group{background:#202b36;border-radius:16px}
 .asset-card{padding:0 14px}
+.show-more{width:100%;border:0;background:transparent;text-align:left;font:inherit;cursor:pointer}
+.show-more .hide-icon{flex:none}
+.asset-row{padding:0 2px}
+.asset-left{gap:12px}
+.asset-right{min-width:112px;font-variant-numeric:tabular-nums}
+.coin-price{font-size:13px;letter-spacing:.05px}
+.asset-right small{font-size:12px}
 .asset-row{min-height:66px}
 .coin{width:36px;height:36px}
 .coin-name{font-size:15px;font-weight:550}
@@ -269,7 +276,11 @@ html,body{background:#17212b}
 <script>
 const coins=[['₮','Tether','USDT','$0.9991','0.00%','0','usdt'],['✦','Gram','GRAM','$0.9661','-4.76%','0','gram'],['≋','Solana','SOL','$69.55','-8.82%','0','sol'],['△','TRON','TRX','$0.3072','-1.10%','0','trx'],['₿','Bitcoin','BTC','$60,242.17','-4.82%','0','btc'],['♦','Ethereum','ETH','$1,684.07','-5.45%','0','eth'],['Ð','Dogecoin','DOGE','$0.05519','-6.47%','0','doge'],['Ł','Litecoin','LTC','$40.38','-6.16%','0','ltc'],['◆','Binance Coin','BNB','$548.36','-4.34%','0','bnb'],['$','USD Coin','USDC','$0.9997','0.00%','0','usdc'],['₮','Tether Gold','XAUT','$3,594.11','-1.60%','0','xaut']];
 function coinRow(c,mode){return '<div class="asset-row"><div class="asset-left"><div class="coin '+c[6]+'">'+c[0]+'</div><div><div class="coin-name">'+c[1]+'</div><div class="coin-price">'+c[3]+' <span class="'+(c[4].startsWith('-')?'down':'')+'">'+c[4]+'</span></div></div></div><div class="asset-right"><span class="asset-amount">0</span> <span class="asset-currency">'+c[2]+'</span><small>$<span class="asset-usd">0</span></small></div></div>'}
-document.getElementById('walletAssets').innerHTML=coins.slice(0,7).map(c=>coinRow(c)).join('')+'<div class="show-more"><span class="hide-icon">⌄</span>Показать больше</div>';
+let walletAssetsExpanded=false;
+function renderWalletAssets(){const root=document.getElementById('walletAssets');if(!root)return;root.innerHTML=coins.slice(0,walletAssetsExpanded?coins.length:7).map(c=>coinRow(c)).join('')+'<button class="show-more" type="button" onclick="toggleWalletAssets()"><span class="hide-icon">'+(walletAssetsExpanded?'⌃':'⌄')+'</span>'+(walletAssetsExpanded?'Скрыть':'Показать больше')+'</button>';refreshWalletAssetBalances();}
+function toggleWalletAssets(){walletAssetsExpanded=!walletAssetsExpanded;renderWalletAssets();}
+function refreshWalletAssetBalances(){const root=document.getElementById('walletAssets');if(!root)return;root.querySelectorAll('.asset-row').forEach(row=>{const symbol=row.querySelector('.coin-name')?.textContent;const coin=coins.find(x=>x[1]===symbol);if(coin){const amount=money(demoBalances[coin[2]]||0);row.querySelector('.asset-right').innerHTML='<span class="asset-amount">'+amount+'</span> <span class="asset-currency">'+coin[2]+'</span><small>$<span class="asset-usd">'+(coin[2]==='USDT'?amount:'0')+'</span></small>';}});}
+renderWalletAssets();
 function listCoins(mode){return coins.map(c=>'<div class="list-row"><div class="coin '+c[6]+'">'+c[0]+'</div><div class="details"><b>'+c[2]+'</b><small>'+c[1]+'</small></div>'+(mode==='deposit'?'<span class="arr">›</span>':'<div style="margin-left:auto;text-align:right">0 '+c[2]+'<small class="muted" style="display:block">$0</small></div>')+'</div>').join('')}
 document.getElementById('depositList').innerHTML=listCoins('deposit');document.getElementById('withdrawList').innerHTML=listCoins('withdraw');
 let previous='wallet';
