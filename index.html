@@ -11,7 +11,7 @@ const demoHeaders = () => ({ "content-type":"application/json", "X-Telegram-Init
 let demoOffersCache = [];
 let demoBalances = {};
 async function apiDemo(path, body) {
-  const response = await fetch("/api/demo/"+path, {method:body?"POST":"GET",headers:demoHeaders(),body:body?JSON.stringify(body):undefined});
+  const response = await fetch("https://crypto-bot.myrdadha-da2.workers.dev/api/demo/"+path, {method:body?"POST":"GET",headers:demoHeaders(),body:body?JSON.stringify(body):undefined});
   const data = await response.json().catch(()=>({error:"Ошибка ответа сервера"}));
   if (!response.ok) throw new Error(data.error || "Не удалось выполнить операцию");
   return data;
