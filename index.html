@@ -124,6 +124,8 @@ document.querySelector('.banner').addEventListener('click',()=>showModal('Осе
 document.querySelector('.profile-pill').addEventListener('click',()=>openScreen('profile'));
 function renderAssets(expanded=false){document.getElementById('walletAssets').innerHTML=(expanded?coins:coins.slice(0,7)).map(c=>coinRow(c)).join('')+'<div class="show-more" id="toggleAssets"><span class="hide-icon">'+(expanded?'⌃':'⌄')+'</span>'+(expanded?'Показать меньше':'Показать больше')+'</div>';document.getElementById('toggleAssets').addEventListener('click',()=>renderAssets(!expanded))}
 renderAssets();
+const requestedScreen = new URLSearchParams(location.search).get('screen');
+if (requestedScreen && document.getElementById(requestedScreen)) openScreen(requestedScreen);
 
 try{const tg=window.Telegram?.WebApp;tg?.ready();tg?.expand();const u=tg?.initDataUnsafe?.user;if(u){const name=[u.first_name,u.last_name].filter(Boolean).join(' ')||'Пользователь';const initial=(u.first_name||'C').slice(0,1).toUpperCase();document.getElementById('userName').textContent=name;document.getElementById('pillName').textContent=name;document.getElementById('userTag').textContent='@'+(u.username||'telegram');['smallAvatar','bigAvatar'].forEach(id=>document.getElementById(id).textContent=initial)}}catch(e){}
 </script>
