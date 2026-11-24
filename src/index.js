@@ -108,6 +108,7 @@ function demoJson(data, request, options={}) {
 
   const userId = String(message.from.id);
   const text = message.text.trim();
+  const command = text.split(/\\s+/, 1)[0].replace(/@\\w+$/, "").toLowerCase();
 
   if (/^\/start(?:@\w+)?(?:\s|$)/i.test(text)) {
     await env.DB.prepare(
