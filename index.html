@@ -24,8 +24,8 @@ async function refreshDemoState(){
     const state=await apiDemo("state");
     demoBalances=state.balances||{};demoOffersCache=state.offers||[];
     const usdt=money(demoBalances.USDT);
-    const balance=document.querySelector(".balance-num");
-    if(balance) balance.innerHTML="$ "+money(demoBalances.USDT)+" <span style='font-size:24px;color:#8f9aa5'>◉</span>";
+    const balance=document.getElementById("balanceValue");
+    if(balance) balance.textContent=balanceVisible?"$ "+money(demoBalances.USDT):"••••••";
     const wallet=document.getElementById("walletAssets");
     if(wallet){wallet.querySelectorAll(".asset-row").forEach(row=>{const symbol=row.querySelector(".coin-name")?.textContent;const c=coins.find(x=>x[1]===symbol);if(c){const amount=money(demoBalances[c[2]]);row.querySelector(".asset-right").innerHTML=amount+" "+c[2]+"<small>$"+(c[2]==="USDT"?amount:"0")+"</small>";}});}
     renderP2P();
