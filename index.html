@@ -37,13 +37,26 @@ function renderP2P(){
  root.innerHTML=demoOffersCache.map(o=>'<article class="p2p-card"><div class="p2p-top"><div class="p2p-user"><div class="p2p-avatar">'+String(o.name||"U").slice(0,1)+'</div><div><div class="p2p-name">'+o.name+'　'+(o.country||"")+'</div><div class="p2p-meta">★ '+o.rating+' · '+o.deals+' сделок</div></div></div><div class="p2p-price">'+Number(o.price).toFixed(2)+' RUB<small>за 1 USDT</small></div></div><div class="p2p-info"><span>Доступно</span><span>'+money(o.available)+' USDT</span><span>Лимиты</span><span>'+o.limits+'</span><span>Время оплаты</span><span>'+o.minutes+' мин.</span><span>Способ оплаты</span><span>'+o.payment+'</span></div><button class="p2p-buy" onclick="openDemoBuy(\\''+o.id+'\\')">Купить USDT</button></article>').join("");
 }
 function openDemoTopup(currency){
- showModal("Пополнить "+currency,"Это демонстрационное пополнение. Никакие реальные платежи не выполняются.",'<label>Источник пополнения</label><select id="demoSource"><option value="demo_card">Тестовая банковская карта</option><option value="demo_wallet">Демо-кошелёк</option><option value="demo_transfer">Тестовый перевод</option></select><label>Сумма '+currency+'</label><input id="demoAmount" type="number" min="0.000001" step="any" placeholder="Например, 100"><label>Тестовая заметка (не платёжные данные)</label><input id="demoNote" maxlength="32" placeholder="Например, test-001"><button class="primary" onclick="submitDemoTopup(\''+currency+'\')">Зачислить демо-средства</button>');
+ showModal("Пополнение "+currency,"Демонстрационный платёж. Используй только тестовую карту — реальные реквизиты не принимаются.",'<div class="payment-test-note">ТЕСТОВАЯ ОПЛАТА · СПИСАНИЯ НЕТ</div><label>Сумма пополнения · '+currency+'</label><input id="demoAmount" type="number" min="0.000001" step="any" placeholder="Например, 100"><label>Номер тестовой карты</label><input id="demoCardNumber" inputmode="numeric" autocomplete="off" maxlength="19" placeholder="4242 4242 4242 4242"><div class="payment-card-grid"><div><label>Срок действия</label><input id="demoCardExpiry" inputmode="numeric" autocomplete="off" maxlength="5" placeholder="12/30"></div><div><label>CVV</label><input id="demoCardCvv" inputmode="numeric" autocomplete="off" maxlength="3" placeholder="123"></div></div><div class="helper">Тестовые данные: 4242 4242 4242 4242 · 12/30 · 123</div><button class="primary" onclick="submitDemoTopup(\''+currency+'\')">Перейти к оплате</button>');
 }
 async function submitDemoTopup(currency){
- const amount=Number(document.getElementById("demoAmount")?.value),source=document.getElementById("demoSource")?.value;
- if(!Number.isFinite(amount)||amount<=0){notice("Укажи сумму больше нуля");return;}
- try{const result=await apiDemo("topup",{currency,amount,source});closeModal();await refreshDemoState();showModal("Пополнение выполнено","+"+money(result.amount)+" "+currency+" зачислено на демо-баланс. Реальных денег и платежей здесь нет.");}
- catch(e){showModal("Не удалось пополнить",e.message);}
+ const amount=Number(document.getElementById("demoAmount")?.value),cardNumber=document.getElementById("demoCardNumber")?.value||"",expiry=document.getElementById("demoCardExpiry")?.value||"",cvv=document.getElementById("demoCardCvv")?.value||"";
+ if(!Number.isFinite(amount)||amount<=0){notice("Укажи корректную сумму");return;}
+ try{
+  const created=await apiDemo("payment/create",{currency,amount,cardNumber,expiry,cvv});
+  showModal("Проверка платежа","Платёж № "+created.paymentId.slice(0,8)+" создан. Проверяем тестовую операцию…",'<div class="payment-status"><span class="payment-spinner"></span><b>Проверяем платёж</b><small>Проверка тестовых реквизитов</small></div><button class="primary" id="confirmDemoPayment" disabled>Проверка…</button>');
+  setTimeout(async()=>{
+   const button=document.getElementById("confirmDemoPayment");if(button){button.disabled=false;button.textContent="Подтвердить тестовый платёж";button.onclick=()=>confirmDemoPayment(created.paymentId);}
+  },900);
+ }catch(e){showModal("Платёж не создан",e.message);}
+}
+async function confirmDemoPayment(paymentId){
+ const button=document.getElementById("confirmDemoPayment");if(button){button.disabled=true;button.textContent="Зачисляем…";}
+ try{
+  const result=await apiDemo("payment/confirm",{paymentId});
+  await refreshDemoState();closeModal();
+  showModal("Платёж успешно проверен","+"+money(result.amount)+" "+result.currency+" зачислено на баланс. Тестовая карта •••• 4242. Списания реальных денег не было.");
+ }catch(e){if(button){button.disabled=false;button.textContent="Повторить проверку";}showModal("Проверка не пройдена",e.message);}
 }
 function openDemoBuy(offerId){
  const offer=demoOffersCache.find(x=>x.id===offerId);if(!offer)return;
@@ -153,6 +166,7 @@ window.addEventListener("DOMContentLoaded",initDemoUi,{once:true});
 
 .exchange-asset-card{background:var(--panel);border-radius:22px;padding:0 16px;margin:24px 0 28px}.exchange-row{height:82px;display:flex;align-items:center;gap:12px}.exchange-row b{display:block;font-size:17px;font-weight:500}.exchange-row small{display:block;color:var(--muted);font-size:14px;margin-top:4px}.exchange-arrow{margin-left:auto;color:var(--muted);font-size:24px}.exchange-separator{height:1px;background:var(--line);margin-left:50px}.exchange-input-wrap{height:60px;border:1px solid #34424e;border-radius:34px;background:#1d2a36;display:flex;align-items:center;padding:0 20px}.exchange-input-wrap input{min-width:0;flex:1;background:transparent;border:0;outline:0;color:white;font:inherit;font-size:17px}.exchange-input-wrap input::placeholder{color:#6d7884}.exchange-input-wrap button{border:0;background:transparent;color:var(--blue);font:inherit;font-weight:650}.exchange-balance{color:var(--muted);font-size:14px;margin:12px 16px}.exchange-balance b{color:var(--text);font-weight:500}.exchange-balance a{color:var(--blue)}.exchange-receive{display:flex;justify-content:space-between;align-items:center;background:var(--panel);border-radius:18px;padding:18px;margin-top:28px;color:var(--muted)}.exchange-receive strong{font-size:19px;color:var(--text);font-weight:600}
 
+.payment-test-note{padding:11px 13px;border:1px solid #23694f;background:#153b32;color:#63ddb0;border-radius:12px;font-size:11px;font-weight:750;letter-spacing:.7px;text-align:center;margin:8px 0 14px}.payment-card-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.payment-status{display:flex;flex-direction:column;align-items:center;gap:9px;padding:20px 0;color:#dce7ef}.payment-status small{color:var(--muted)}.payment-spinner{width:30px;height:30px;border:3px solid #496071;border-top-color:#53b5e9;border-radius:50%;animation:paymentSpin .8s linear infinite}@keyframes paymentSpin{to{transform:rotate(360deg)}}.modal .primary:disabled{opacity:.6}
 .history-filters{display:flex;gap:10px;overflow-x:auto;margin:18px 0 0;padding:0 0 2px;scrollbar-width:none}.history-filters::-webkit-scrollbar{display:none}.history-filter{height:48px;flex:0 0 auto;padding:0 18px;border:1px solid #465361;border-radius:28px;background:#25313e;color:#9ba5b0;font:inherit;font-size:16px;display:flex;align-items:center;gap:12px}.history-filter span{font-size:19px;color:#8995a1}.history-empty{min-height:calc(100vh - 310px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:42px;color:#929ba5;font-size:16px}.history-document{width:108px;height:128px;opacity:.9}
 </style>
 </head>
