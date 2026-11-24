@@ -121,13 +121,14 @@ function demoJson(data, request, options={}) {
       web_app: { url: withScreen(env.WEBAPP_URL, screen) }
     });
 
+    await configureBotMenu(env);
     const keyboard = {
       inline_keyboard: [
         [appButton("👛 Кошелёк", "wallet"), appButton("🔁 Обмен", "exchange")],
         [appButton("🟦 P2P", "p2p"), appButton("📊 Биржа", "market")],
         [appButton("🧾 Чеки", "history"), appButton("📥 Счета", "deposit")],
-        [appButton("💳 Crypto Pay", "profile"), appButton("🎁 Розыгрыши", "profile")],
-        [appButton("📣 Подписки", "profile"), appButton("⚙️ Настройки", "profile")]
+        [appButton("💳 Crypto Pay", "pay"), appButton("🎁 Розыгрыши", "giveaways")],
+        [appButton("📣 Подписки", "subscriptions"), appButton("⚙️ Настройки", "settings")]
       ]
     };
 
@@ -187,21 +188,57 @@ function demoJson(data, request, options={}) {
     );
   }
 
-  const menuRoutes = {
-    "👛 Кошелёк": "wallet",
-    "🔁 Обмен": "exchange",
-    "🟦 P2P": "p2p",
-    "📊 Биржа": "market",
-    "🧾 Чеки": "history",
-    "📥 Счета": "deposit",
-    "💳 Crypto Pay": "profile",
-    "🎁 Розыгрыши": "profile",
-    "📣 Подписки": "profile",
-    "⚙️ Настройки": "profile"
+  const commandRoutes = {
+    "/p2p": ["P2P", "p2p"],
+    "/wallet": ["Кошелёк", "wallet"],
+    "/checks": ["Чеки", "history"],
+    "/invoices": ["Счета", "deposit"],
+    "/giveaways": ["Розыгрыши", "giveaways"],
+    "/subscriptions": ["Подписки", "subscriptions"],
+    "/pay": ["Crypto Pay", "pay"],
+    "/settings": ["Настройки", "settings"]
   };
-  if (menuRoutes[text]) {
-    return send(env, userId, "Откройте раздел через кнопку меню ниже.");
+  const command = text.split(/\\s+/)[0].split("@")[0].toLowerCase();
+  if (commandRoutes[command]) {
+    if (!env.WEBAPP_URL) throw new Error("WEBAPP_URL secret is missing");
+    const [label, screen] = commandRoutes[command];
+    return send(env, userId, "Открыть раздел «" + label + "»:", {
+      inline_keyboard: [[{
+        text: "Открыть " + label,
+        web_app: { url: withScreen(env.WEBAPP_URL, screen) }
+      }]]
+    });
   }
+}
+
+async function configureBotMenu(env) {
+  const commands = [
+    {command:"start",description:"Главное меню Crypto Bot"},
+    {command:"p2p",description:"P2P — купить и продать"},
+    {command:"wallet",description:"Кошелёк и баланс"},
+    {command:"checks",description:"Мои чеки"},
+    {command:"invoices",description:"Счета"},
+    {command:"giveaways",description:"Розыгрыши"},
+    {command:"subscriptions",description:"Подписки"},
+    {command:"pay",description:"Crypto Pay"},
+    {command:"settings",description:"Настройки"}
+  ];
+  await telegramCall(env, "setMyCommands", {commands});
+  await telegramCall(env, "setChatMenuButton", {menu_button:{type:"commands"}});
+}
+
+async function telegramCall(env, method, payload) {
+  const response = await fetch("https://api.telegram.org/bot" + env.BOT_TOKEN + "/" + method, {
+    method:"POST",
+    headers:{"content-type":"application/json"},
+    body:JSON.stringify(payload)
+  });
+  const result = await response.json();
+  if (!response.ok || !result.ok) {
+    console.error("Telegram " + method + " failed", result);
+    throw new Error("Telegram " + method + " failed");
+  }
+  return result;
 }
 
 function withScreen(base, screen) {
