@@ -198,7 +198,7 @@ function demoJson(data, request, options={}) {
       text: "💠 Здесь вы можете купить или продать криптовалюту переводом на карту или электронный кошелёк. Смотреть видеоинструкцию ›",
       rows: [
         [appButton("Открыть P2P Маркет", "p2p")],
-        [appButton("Купить", "p2p?mode=buy"), appButton("Продать", "p2p?mode=sell")],
+        [appButton("Купить", "p2p-buy"), appButton("Продать", "p2p-sell")],
         [appButton("Мои сделки", "p2p-deals"), appButton("Создать объявление", "p2p-create")],
         [appButton("Оплата и валюта", "p2p-payment"), appButton("Мой профиль", "profile")],
         back
@@ -208,7 +208,7 @@ function demoJson(data, request, options={}) {
       text: await walletMessage(env, userId),
       rows: [
         [appButton("Открыть кошелёк", "wallet")],
-        [appButton("Пополнить", "wallet?tab=topup"), appButton("Вывести", "wallet?tab=withdraw")],
+        [appButton("Пополнить", "wallet-topup"), appButton("Вывести", "wallet-withdraw")],
         back
       ]
     },
