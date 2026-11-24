@@ -69,9 +69,9 @@ export default {
         if (payment.status !== "pending") return demoJson({error:"Платёж уже обработан"},request,{status:409});
         const now=Date.now();
         const result=await env.DB.batch([
-          env.DB.prepare("UPDATE demo_payments SET status='paid',paid_at=? WHERE payment_id=? AND user_id=? AND status='pending'").bind(now,paymentId,userId),
-          env.DB.prepare("INSERT INTO balances(user_id,currency,amount) VALUES(?,?,?) ON CONFLICT(user_id,currency) DO UPDATE SET amount=amount+excluded.amount").bind(userId,payment.currency,payment.amount),
-          env.DB.prepare("INSERT INTO demo_transactions(user_id,kind,currency,amount,details,created_at) VALUES(?,?,?,?,?,?)").bind(userId,"demo_card_topup",payment.currency,payment.amount,JSON.stringify({paymentId,cardLast4:"4242",test:true}),now)
+          env.DB.prepare("INSERT INTO balances(user_id,currency,amount) SELECT user_id,currency,amount FROM demo_payments WHERE payment_id=? AND user_id=? AND status='pending' ON CONFLICT(user_id,currency) DO UPDATE SET amount=amount+excluded.amount").bind(paymentId,userId),
+          env.DB.prepare("INSERT INTO demo_transactions(user_id,kind,currency,amount,details,created_at) SELECT user_id,'demo_card_topup',currency,amount,?,? FROM demo_payments WHERE payment_id=? AND user_id=? AND status='pending'").bind(JSON.stringify({paymentId,cardLast4:"4242",test:true}),now,paymentId,userId),
+          env.DB.prepare("UPDATE demo_payments SET status='paid',paid_at=? WHERE payment_id=? AND user_id=? AND status='pending'").bind(now,paymentId,userId)
         ]);
         if (!result[0]?.meta?.changes) return demoJson({error:"Платёж уже подтверждён"},request,{status:409});
         return demoJson({ok:true,status:"paid",currency:payment.currency,amount:payment.amount},request);
