@@ -56,9 +56,9 @@ async function submitDemoBuy(offerId){
  catch(e){showModal("Покупка не выполнена",e.message);}
 }
 const swapRates={USDT:1,GRAM:1,BTC:67200,ETH:1950,SOL:142};
-function calculateSwap(){const amount=Number(document.getElementById("swapAmount")?.value)||0,from=document.getElementById("swapFrom")?.value||"USDT",to=document.getElementById("swapTo")?.value||"GRAM",rate=(swapRates[from]||1)/(swapRates[to]||1),out=amount*rate;document.getElementById("swapResult").textContent=out.toLocaleString("ru-RU",{maximumFractionDigits:8})+" "+to;const balance=document.getElementById("exchangeBalance");if(balance)balance.textContent=money(demoBalances[from]||0)+" "+from;}
+function calculateSwap(){const amount=Number(document.getElementById("swapAmount")?.value)||0,rate=(swapRates.USDT||1)/(swapRates.GRAM||1),out=amount*rate;const result=document.getElementById("swapResult");if(result)result.textContent=out.toLocaleString("ru-RU",{maximumFractionDigits:8})+" GRAM";const balance=document.getElementById("exchangeBalance");if(balance)balance.textContent=money(demoBalances.USDT||0)+" USDT";}
 function swapCurrencies(){calculateSwap();}
-function submitSwap(){const amount=Number(document.getElementById("swapAmount")?.value);if(!Number.isFinite(amount)||amount<=0){notice("Укажи сумму для обмена");return;}showModal("Обмен недоступен","Интерфейс обмена доступен для просмотра. Реальная конвертация пока не подключена.");}
+function submitSwap(){const amount=Number(document.getElementById("swapAmount")?.value);if(!Number.isFinite(amount)||amount<=0){notice("Укажи сумму для обмена");return;}showModal("Обмен недоступен","Экран повторяет интерфейс Crypto Bot. Реальная конвертация пока не подключена.");}
 function initDemoUi(){
  document.querySelectorAll("#p2pTabs button").forEach(b=>b.addEventListener("click",()=>{
   document.querySelectorAll("#p2pTabs button").forEach(x=>x.classList.remove("selected"));
