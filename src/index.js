@@ -188,27 +188,85 @@ function demoJson(data, request, options={}) {
     );
   }
 
-  const commandRoutes = {
-    "/p2p": ["P2P", "p2p"],
-    "/wallet": ["Кошелёк", "wallet"],
-    "/checks": ["Чеки", "history"],
-    "/invoices": ["Счета", "deposit"],
-    "/giveaways": ["Розыгрыши", "profile"],
-    "/subscriptions": ["Подписки", "profile"],
-    "/pay": ["Crypto Pay", "profile"],
-    "/settings": ["Настройки", "profile"]
+  const appButton = (label, screen) => ({
+    text: label,
+    web_app: { url: withScreen(env.WEBAPP_URL, screen) }
+  });
+  const back = [appButton("« Назад", "home")];
+  const commandViews = {
+    "/p2p": {
+      text: "💠 Здесь вы можете купить или продать криптовалюту переводом на карту или электронный кошелёк. Смотреть видеоинструкцию ›",
+      rows: [
+        [appButton("Открыть P2P Маркет", "p2p")],
+        [appButton("Купить", "p2p?mode=buy"), appButton("Продать", "p2p?mode=sell")],
+        [appButton("Мои сделки", "p2p-deals"), appButton("Создать объявление", "p2p-create")],
+        [appButton("Оплата и валюта", "p2p-payment"), appButton("Мой профиль", "profile")],
+        back
+      ]
+    },
+    "/wallet": {
+      text: await walletMessage(env, userId),
+      rows: [
+        [appButton("Открыть кошелёк", "wallet")],
+        [appButton("Пополнить", "wallet?tab=topup"), appButton("Вывести", "wallet?tab=withdraw")],
+        back
+      ]
+    },
+    "/checks": {
+      text: "Здесь вы можете создать чек для мгновенной отправки криптовалюты любому пользователю. Смотреть видеоинструкцию ›",
+      rows: [[appButton("Создать чек", "checks-create"), appButton("Создать из чата", "checks-chat")], back]
+    },
+    "/invoices": {
+      text: "Здесь вы можете создать счёт для получения оплаты или сбора средств в криптовалюте. Смотрите видеоинструкцию ›\n\nПопробовать счета можно в @CryptoBotDonates.",
+      rows: [[appButton("Создать счёт", "invoice-create"), appButton("Создать из чата", "invoice-chat")], back]
+    },
+    "/giveaways": {
+      text: "🎁 Здесь вы можете создать розыгрыш криптовалюты среди подписчиков вашего канала, чтобы привлечь новую аудиторию, поощрить текущих подписчиков или прорекламировать канал.\n\n🦋 Crypto Bot распределит криптовалюту случайным образом среди участников розыгрыша.",
+      rows: [
+        [appButton("Создать розыгрыш", "giveaway-create")],
+        [appButton("Управление розыгрышами", "giveaways")],
+        [appButton("Мой профиль", "profile"), appButton("Оставить отзыв", "feedback")],
+        back
+      ]
+    },
+    "/subscriptions": {
+      text: "🍑 Здесь вы можете управлять своими платными подписками.\n\n💰 Подключите свой канал или группу, чтобы получать доход. Комиссия 5% включена в цену подписки. Смотреть видеоинструкцию ›",
+      rows: [[appButton("Подключить", "subscriptions-connect")], back]
+    },
+    "/pay": {
+      text: "🏝 Здесь вы можете интегрировать платёжную систему Crypto Pay в свои проекты. Подробнее ›\n\n🛒 Принимайте и отправляйте оплату в криптовалюте с помощью нашего API. Попробовать пример интеграции можно в @CryptoPayTestBot.",
+      rows: [
+        [appButton("Открыть в приложении", "pay")],
+        [appButton("Создать приложение", "pay-create"), appButton("Мои приложения", "pay-apps")],
+        [appButton("Документация API", "pay-docs"), appButton("Чат для разработчиков", "pay-chat")],
+        back
+      ]
+    },
+    "/settings": {
+      text: "👤 " + (message.from.first_name || "Пользователь") + (message.from.last_name ? " " + message.from.last_name : "") +
+        "\n\nЧасовой пояс: Europe/Moscow\nЛокальная валюта: USD",
+      rows: [[appButton("Открыть настройки", "settings")], back]
+    }
   };
-  const command = text.split(/\\s+/)[0].split("@")[0].toLowerCase();
-  if (commandRoutes[command]) {
+  const view = commandViews[command];
+  if (view) {
     if (!env.WEBAPP_URL) throw new Error("WEBAPP_URL secret is missing");
-    const [label, screen] = commandRoutes[command];
-    return send(env, userId, "Открыть раздел «" + label + "»:", {
-      inline_keyboard: [[{
-        text: "Открыть " + label,
-        web_app: { url: withScreen(env.WEBAPP_URL, screen) }
-      }]]
-    });
+    return send(env, userId, view.text, { inline_keyboard: view.rows });
   }
+}
+
+async function walletMessage(env, userId) {
+  const rows = await env.DB.prepare(
+    "SELECT currency,amount FROM balances WHERE user_id=?"
+  ).bind(userId).all();
+  const balances = Object.fromEntries(rows.results.map(row => [String(row.currency).toUpperCase(), Number(row.amount)]));
+  const assets = [
+    ["Tether","USDT"],["Gram","GRAM"],["Solana","SOL"],["TRON","TRX"],
+    ["Bitcoin","BTC"],["Ethereum","ETH"],["Dogecoin","DOGE"],["Litecoin","LTC"],
+    ["Binance Coin","BNB"],["USD Coin","USDC"],["Tether Gold","XAUT"]
+  ];
+  const lines = assets.map(([name, code]) => "🪙 " + name + ": " + (balances[code] || 0) + " " + code);
+  return "👛 Кошелёк\n\n" + lines.join("\n\n") + "\n\n≈ 0 BTC";
 }
 
 async function configureBotMenu(env) {
