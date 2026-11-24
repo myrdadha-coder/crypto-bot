@@ -46,31 +46,12 @@ function renderP2P(){
  root.innerHTML=demoOffersCache.map(o=>'<article class="p2p-card"><div class="p2p-top"><div class="p2p-user"><div class="p2p-avatar">'+String(o.name||"U").slice(0,1)+'</div><div><div class="p2p-name">'+o.name+'　'+(o.country||"")+'</div><div class="p2p-meta">★ '+o.rating+' · '+o.deals+' сделок</div></div></div><div class="p2p-price">'+Number(o.price).toFixed(2)+' RUB<small>за 1 USDT</small></div></div><div class="p2p-info"><span>Доступно</span><span>'+money(o.available)+' USDT</span><span>Лимиты</span><span>'+o.limits+'</span><span>Время оплаты</span><span>'+o.minutes+' мин.</span><span>Способ оплаты</span><span>'+o.payment+'</span></div><button class="p2p-buy" onclick="openDemoBuy(\\''+o.id+'\\')">Купить USDT</button></article>').join("");
 }
 function openDemoTopup(currency){
- showModal("Пополнение "+currency,"Демонстрационный платёж. Используй только тестовую карту — реальные реквизиты не принимаются.",'<div class="payment-test-note">ТЕСТОВАЯ ОПЛАТА · СПИСАНИЯ НЕТ</div><label>Сумма пополнения · '+currency+'</label><input id="demoAmount" type="number" min="0.000001" step="any" placeholder="Например, 100"><label>Номер тестовой карты</label><input id="demoCardNumber" inputmode="numeric" autocomplete="off" maxlength="19" placeholder="4242 4242 4242 4242"><div class="payment-card-grid"><div><label>Срок действия</label><input id="demoCardExpiry" inputmode="numeric" autocomplete="off" maxlength="5" placeholder="12/30"></div><div><label>CVV</label><input id="demoCardCvv" inputmode="numeric" autocomplete="off" maxlength="3" placeholder="123"></div></div><div class="helper">Тестовые данные: 4242 4242 4242 4242 · 12/30 · 123</div><button class="primary" onclick="submitDemoTopup(\''+currency+'\')">Перейти к оплате</button>');
+ showModal("Пополнение "+currency,"Демонстрационный сценарий пополнения. Здесь показан экран выбора суммы и метода, без ввода данных банковской карты и без списания средств.",'<label>Сумма пополнения · '+currency+'</label><input id="demoAmount" type="number" min="0.01" max="100000" step="any" placeholder="Например, 100"><div class="payment-test-note">ДЕМО-РЕЖИМ · РЕАЛЬНОЙ ОПЛАТЫ НЕТ</div><button class="primary" onclick="submitDemoTopup(\''+currency+'\')">Продолжить</button>');
 }
 async function submitDemoTopup(currency){
- const amount=Number(document.getElementById("demoAmount")?.value),cardNumber=document.getElementById("demoCardNumber")?.value||"",expiry=document.getElementById("demoCardExpiry")?.value||"",cvv=document.getElementById("demoCardCvv")?.value||"";
- const normalizedCard=cardNumber.replace(/\\s/g,"");
+ const amount=Number(document.getElementById("demoAmount")?.value);
  if(!Number.isFinite(amount)||amount<0.01||amount>100000){notice("Укажи сумму от 0,01 до 100 000");return;}
- if(normalizedCard!=="4242424242424242"||expiry!=="12/30"||cvv!=="123"){
-  showModal("Платёж отклонён","Данные не прошли проверку. Для демонстрации подходят только тестовые реквизиты: 4242 4242 4242 4242 · 12/30 · 123. Реальные карты не принимаются.");
-  return;
- }
- try{
-  const created=await apiDemo("payment/create",{currency,amount,cardNumber,expiry,cvv});
-  showModal("Проверка платежа","Платёж № "+created.paymentId.slice(0,8)+" создан. Проверяем тестовую операцию…",'<div class="payment-status"><span class="payment-spinner"></span><b>Проверяем платёж</b><small>Проверка тестовых реквизитов</small></div><button class="primary" id="confirmDemoPayment" disabled>Проверка…</button>');
-  setTimeout(async()=>{
-   const button=document.getElementById("confirmDemoPayment");if(button){button.disabled=false;button.textContent="Подтвердить тестовый платёж";button.onclick=()=>confirmDemoPayment(created.paymentId);}
-  },900);
- }catch(e){showModal("Платёж не создан",e.message);}
-}
-async function confirmDemoPayment(paymentId){
- const button=document.getElementById("confirmDemoPayment");if(button){button.disabled=true;button.textContent="Зачисляем…";}
- try{
-  const result=await apiDemo("payment/confirm",{paymentId});
-  await refreshDemoState();closeModal();
-  showModal("Платёж успешно проверен","+"+money(result.amount)+" "+result.currency+" зачислено на баланс. Тестовая карта •••• 4242. Списания реальных денег не было.");
- }catch(e){if(button){button.disabled=false;button.textContent="Повторить проверку";}showModal("Проверка не пройдена",e.message);}
+ showModal("Подтверждение пополнения","Заявка на демонстрационное пополнение: "+money(amount)+" "+currency+". Реальный платёж не выполняется.",'<button class="primary" onclick="showModal(\'Демо-пополнение\',\'Операция не отправлена в платёжную систему. Баланс не изменён.\')">Подтвердить демо</button>');
 }
 function openDemoBuy(offerId){
  const offer=demoOffersCache.find(x=>x.id===offerId);if(!offer)return;
