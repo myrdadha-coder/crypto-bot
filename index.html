@@ -11,6 +11,7 @@ const tgApp = window.Telegram?.WebApp;
 const demoHeaders = () => ({ "content-type":"application/json", "X-Telegram-Init-Data": tgApp?.initData || "" });
 let demoOffersCache = [];
 let demoBalances = {};
+let p2pMode = "buy";
 async function apiDemo(path, body) {
   const response = await fetch("https://crypto-bot.myrdadha-da2.workers.dev/api/demo/"+path, {method:body?"POST":"GET",headers:demoHeaders(),body:body?JSON.stringify(body):undefined});
   const data = await response.json().catch(()=>({error:"Ошибка ответа сервера"}));
@@ -32,7 +33,15 @@ async function refreshDemoState(){
 }
 function renderP2P(){
  const root=document.getElementById("p2pOffers");if(!root)return;
- const count=document.getElementById("p2pCount");if(count)count.textContent=demoOffersCache.length+" объявл.";
+ const count=document.getElementById("p2pCount");
+ const tabs=document.querySelectorAll("#p2pTabs button");
+ tabs.forEach(b=>{const active=b.dataset.kind===p2pMode;b.classList.toggle("selected",active);b.setAttribute("aria-pressed",String(active));});
+ if(p2pMode==="sell"){
+  if(count)count.textContent="0 объявл.";
+  root.innerHTML='<div class="empty"><div class="doc">⇄</div><span>У вас пока нет объявлений на продажу</span><small class="muted">Создание и размещение объявлений пока не подключено в демо-версии</small></div>';
+  return;
+ }
+ if(count)count.textContent=demoOffersCache.length+" объявл.";
  if(!demoOffersCache.length){root.innerHTML='<div class="empty"><div class="doc">⇄</div><span>Пока нет доступных объявлений</span></div>';return;}
  root.innerHTML=demoOffersCache.map(o=>'<article class="p2p-card"><div class="p2p-top"><div class="p2p-user"><div class="p2p-avatar">'+String(o.name||"U").slice(0,1)+'</div><div><div class="p2p-name">'+o.name+'　'+(o.country||"")+'</div><div class="p2p-meta">★ '+o.rating+' · '+o.deals+' сделок</div></div></div><div class="p2p-price">'+Number(o.price).toFixed(2)+' RUB<small>за 1 USDT</small></div></div><div class="p2p-info"><span>Доступно</span><span>'+money(o.available)+' USDT</span><span>Лимиты</span><span>'+o.limits+'</span><span>Время оплаты</span><span>'+o.minutes+' мин.</span><span>Способ оплаты</span><span>'+o.payment+'</span></div><button class="p2p-buy" onclick="openDemoBuy(\\''+o.id+'\\')">Купить USDT</button></article>').join("");
 }
@@ -100,8 +109,7 @@ function submitSwap(){const amount=Number(document.getElementById("swapAmount")?
 function initDemoUi(){
  refreshMarketPrices();setInterval(refreshMarketPrices,60000);
  document.querySelectorAll("#p2pTabs button").forEach(b=>b.addEventListener("click",()=>{
-  document.querySelectorAll("#p2pTabs button").forEach(x=>x.classList.remove("selected"));
-  b.classList.add("selected");
+  p2pMode=b.dataset.kind==="sell"?"sell":"buy";
   renderP2P();
  }));
  refreshDemoState();
