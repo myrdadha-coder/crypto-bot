@@ -127,8 +127,8 @@ function demoJson(data, request, options={}) {
         [appButton("👛 Кошелёк", "wallet"), appButton("🔁 Обмен", "exchange")],
         [appButton("🟦 P2P", "p2p"), appButton("📊 Биржа", "market")],
         [appButton("🧾 Чеки", "history"), appButton("📥 Счета", "deposit")],
-        [appButton("💳 Crypto Pay", "pay"), appButton("🎁 Розыгрыши", "giveaways")],
-        [appButton("📣 Подписки", "subscriptions"), appButton("⚙️ Настройки", "settings")]
+        [appButton("💳 Crypto Pay", "profile"), appButton("🎁 Розыгрыши", "profile")],
+        [appButton("📣 Подписки", "profile"), appButton("⚙️ Настройки", "profile")]
       ]
     };
 
@@ -193,10 +193,10 @@ function demoJson(data, request, options={}) {
     "/wallet": ["Кошелёк", "wallet"],
     "/checks": ["Чеки", "history"],
     "/invoices": ["Счета", "deposit"],
-    "/giveaways": ["Розыгрыши", "giveaways"],
-    "/subscriptions": ["Подписки", "subscriptions"],
-    "/pay": ["Crypto Pay", "pay"],
-    "/settings": ["Настройки", "settings"]
+    "/giveaways": ["Розыгрыши", "profile"],
+    "/subscriptions": ["Подписки", "profile"],
+    "/pay": ["Crypto Pay", "profile"],
+    "/settings": ["Настройки", "profile"]
   };
   const command = text.split(/\\s+/)[0].split("@")[0].toLowerCase();
   if (commandRoutes[command]) {
