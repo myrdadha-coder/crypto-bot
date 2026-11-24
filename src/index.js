@@ -48,13 +48,33 @@ export default {
         const rows = await env.DB.prepare("SELECT currency,amount FROM balances WHERE user_id=?").bind(userId).all();
         return demoJson({ mode: "demo", balances: Object.fromEntries(rows.results.map(row => [row.currency, row.amount])), offers: demoOffers }, request);
       }
-      if (url.pathname === "/api/demo/topup" && request.method === "POST") {
+      if (url.pathname === "/api/demo/payment/create" && request.method === "POST") {
         const body = await request.json().catch(() => ({}));
-        const amount = Number(body.amount), currency = String(body.currency || "USDT").toUpperCase(), source = String(body.source || "");
-        if (!["USDT","BTC","GRAM","TON","ETH","SOL","TRX"].includes(currency) || !Number.isFinite(amount) || amount <= 0 || amount > 100000 || !["demo_card","demo_wallet","demo_transfer"].includes(source)) return demoJson({ error: "Некорректные тестовые данные" }, request, { status: 400 });
-        await env.DB.prepare("INSERT INTO balances(user_id,currency,amount) VALUES(?,?,?) ON CONFLICT(user_id,currency) DO UPDATE SET amount=amount+excluded.amount").bind(userId,currency,amount).run();
-        await env.DB.prepare("INSERT INTO demo_transactions(user_id,kind,currency,amount,details,created_at) VALUES(?,?,?,?,?,?)").bind(userId,"demo_topup",currency,amount,source,Date.now()).run();
-        return demoJson({ ok:true, mode:"demo", message:"Тестовое пополнение зачислено", currency, amount }, request);
+        const amount = Number(body.amount), currency = String(body.currency || "USDT").toUpperCase();
+        const cardNumber = String(body.cardNumber || "").replace(/\\D/g, "");
+        const expiry = String(body.expiry || ""), cvv = String(body.cvv || "");
+        if (!["USDT","BTC","GRAM","TON","ETH","SOL","TRX"].includes(currency) || !Number.isFinite(amount) || amount <= 0 || amount > 100000 || !/^4242424242424242$/.test(cardNumber) || !/^12\\/30$/.test(expiry) || cvv !== "123") {
+          return demoJson({ error:"Используй только тестовую карту: 4242 4242 4242 4242, 12/30, 123. Реальные карты не принимаются." },request,{status:400});
+        }
+        const paymentId = crypto.randomUUID();
+        await env.DB.prepare("INSERT INTO demo_payments(payment_id,user_id,currency,amount,status,card_last4,created_at) VALUES(?,?,?,?,?,?,?)").bind(paymentId,userId,currency,amount,"pending","4242",Date.now()).run();
+        return demoJson({ok:true,paymentId,status:"pending",message:"Платёж создан. Ожидает проверки."},request);
+      }
+      if (url.pathname === "/api/demo/payment/confirm" && request.method === "POST") {
+        const body = await request.json().catch(() => ({}));
+        const paymentId = String(body.paymentId || "");
+        const payment = await env.DB.prepare("SELECT payment_id,currency,amount,status FROM demo_payments WHERE payment_id=? AND user_id=?").bind(paymentId,userId).first();
+        if (!payment) return demoJson({error:"Платёж не найден"},request,{status:404});
+        if (payment.status === "paid") return demoJson({ok:true,status:"paid",currency:payment.currency,amount:payment.amount,alreadyPaid:true},request);
+        if (payment.status !== "pending") return demoJson({error:"Платёж уже обработан"},request,{status:409});
+        const now=Date.now();
+        const result=await env.DB.batch([
+          env.DB.prepare("UPDATE demo_payments SET status='paid',paid_at=? WHERE payment_id=? AND user_id=? AND status='pending'").bind(now,paymentId,userId),
+          env.DB.prepare("INSERT INTO balances(user_id,currency,amount) VALUES(?,?,?) ON CONFLICT(user_id,currency) DO UPDATE SET amount=amount+excluded.amount").bind(userId,payment.currency,payment.amount),
+          env.DB.prepare("INSERT INTO demo_transactions(user_id,kind,currency,amount,details,created_at) VALUES(?,?,?,?,?,?)").bind(userId,"demo_card_topup",payment.currency,payment.amount,JSON.stringify({paymentId,cardLast4:"4242",test:true}),now)
+        ]);
+        if (!result[0]?.meta?.changes) return demoJson({error:"Платёж уже подтверждён"},request,{status:409});
+        return demoJson({ok:true,status:"paid",currency:payment.currency,amount:payment.amount},request);
       }
       if (url.pathname === "/api/demo/buy" && request.method === "POST") {
         const body = await request.json().catch(() => ({}));
