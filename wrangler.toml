@@ -9,4 +9,4 @@ binding = "ASSETS"
 [[d1_databases]]
 binding = "DB"
 database_name = "crypto-bot-db"
-database_id = "REPLACE_WITH_D1_DATABASE_ID"
+database_id = "59674305-1b8e-4e19-98f5-7111d6e6427f"
