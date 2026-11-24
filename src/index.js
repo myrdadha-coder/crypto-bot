@@ -38,10 +38,10 @@ export default {
 
 
     if (url.pathname.startsWith("/api/demo/")) {
-      if (!env.BOT_TOKEN) return demoJson({ error: "Bot is not configured" }, request, { status: 503 }, request);
+      if (!env.BOT_TOKEN) return demoJson({ error: "Bot is not configured" }, request, { status: 503 });
       const initData = request.headers.get("X-Telegram-Init-Data") || "";
       const user = await verifyInitData(initData, env.BOT_TOKEN);
-      if (!user?.id) return demoJson({ error: "Open inside Telegram" }, request, { status: 401 }, request);
+      if (!user?.id) return demoJson({ error: "Open inside Telegram" }, request, { status: 401 });
       const userId = String(user.id);
       await env.DB.prepare("INSERT OR IGNORE INTO users(user_id,first_name) VALUES(?,?)").bind(userId, user.first_name || "").run();
       if (url.pathname === "/api/demo/state" && request.method === "GET") {
@@ -51,7 +51,7 @@ export default {
       if (url.pathname === "/api/demo/topup" && request.method === "POST") {
         const body = await request.json().catch(() => ({}));
         const amount = Number(body.amount), currency = String(body.currency || "USDT").toUpperCase(), source = String(body.source || "");
-        if (!["USDT","BTC","GRAM","TON","ETH","SOL","TRX"].includes(currency) || !Number.isFinite(amount) || amount <= 0 || amount > 100000 || !["demo_card","demo_wallet","demo_transfer"].includes(source)) return demoJson({ error: "Некорректные тестовые данные" }, request, { status: 400 }, request);
+        if (!["USDT","BTC","GRAM","TON","ETH","SOL","TRX"].includes(currency) || !Number.isFinite(amount) || amount <= 0 || amount > 100000 || !["demo_card","demo_wallet","demo_transfer"].includes(source)) return demoJson({ error: "Некорректные тестовые данные" }, request, { status: 400 });
         await env.DB.prepare("INSERT INTO balances(user_id,currency,amount) VALUES(?,?,?) ON CONFLICT(user_id,currency) DO UPDATE SET amount=amount+excluded.amount").bind(userId,currency,amount).run();
         await env.DB.prepare("INSERT INTO demo_transactions(user_id,kind,currency,amount,details,created_at) VALUES(?,?,?,?,?,?)").bind(userId,"demo_topup",currency,amount,source,Date.now()).run();
         return demoJson({ ok:true, mode:"demo", message:"Тестовое пополнение зачислено", currency, amount }, request);
@@ -65,11 +65,11 @@ export default {
         const debit = await env.DB.prepare("UPDATE balances SET amount=amount-? WHERE user_id=? AND currency='USDT' AND amount>=?").bind(total,userId,total).run();
         if (!debit.meta?.changes) return demoJson({error:"Недостаточно демо-баланса USDT",required:total},request,{status:409});
         await env.DB.prepare("INSERT INTO demo_transactions(user_id,kind,currency,amount,details,created_at) VALUES(?,?,?,?,?,?)").bind(userId,"demo_purchase","USDT",-total,JSON.stringify({offerId:offer.id,quantity}),Date.now()).run();
-        return demoJson({ok:true,mode:"demo",quantity,total,currency:"USDT",offer:offer.name});
+        return demoJson({ok:true,mode:"demo",quantity,total,currency:"USDT",offer:offer.name},request);
       }
       if (url.pathname === "/api/demo/history" && request.method === "GET") {
         const rows = await env.DB.prepare("SELECT kind,currency,amount,details,created_at FROM demo_transactions WHERE user_id=? ORDER BY created_at DESC LIMIT 100").bind(userId).all();
-        return demoJson({transactions:rows.results});
+        return demoJson({transactions:rows.results},request);
       }
       return demoJson({error:"Not found"},request,{status:404});
     }
