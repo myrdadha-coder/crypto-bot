@@ -210,7 +210,37 @@ document.querySelector('.profile-pill').addEventListener('click',()=>openScreen(
 function renderAssets(expanded=false){document.getElementById('walletAssets').innerHTML=(expanded?coins:coins.slice(0,7)).map(c=>coinRow(c)).join('')+'<div class="show-more" id="toggleAssets"><span class="hide-icon">'+(expanded?'⌃':'⌄')+'</span>'+(expanded?'Показать меньше':'Показать больше')+'</div>';document.getElementById('toggleAssets').addEventListener('click',()=>renderAssets(!expanded))}
 renderAssets();
 const requestedScreen = new URLSearchParams(location.search).get('screen');
-if (requestedScreen && document.getElementById(requestedScreen)) openScreen(requestedScreen);
+const screenAliases = {
+ "p2p-buy":"p2p","p2p-sell":"p2p","p2p-deals":"p2p","p2p-create":"p2p","p2p-payment":"p2p",
+ "wallet-topup":"deposit","wallet-withdraw":"withdraw",
+ "checks-create":"history","checks-chat":"history",
+ "invoice-create":"deposit","invoice-chat":"deposit",
+ "giveaway-create":"profile","subscriptions-connect":"profile",
+ "pay-create":"profile","pay-apps":"profile","pay-docs":"profile","pay-chat":"profile",
+ "home":"wallet"
+};
+const targetScreen = screenAliases[requestedScreen] || requestedScreen;
+if (targetScreen && document.getElementById(targetScreen)) {
+ openScreen(targetScreen);
+ if(requestedScreen==="p2p-buy"){
+  const tab=document.querySelector('#p2pTabs [data-kind="buy"]');tab?.click();
+ } else if(requestedScreen==="p2p-sell"){
+  const tab=document.querySelector('#p2pTabs [data-kind="sell"]');tab?.click();
+ } else if(requestedScreen==="p2p-deals" || requestedScreen==="p2p-create" || requestedScreen==="p2p-payment"){
+  const titles={"p2p-deals":"Мои сделки","p2p-create":"Создать объявление","p2p-payment":"Оплата и валюта"};
+  showModal(titles[requestedScreen],"Демо-раздел подготовлен как интерфейсный переход; полноценная логика этого раздела ещё не подключена.");
+ } else if(requestedScreen==="checks-create" || requestedScreen==="checks-chat"){
+  showModal("Создание чека","В демо-версии чек можно будет создать после подключения отдельного сценария создания и отправки.");
+ } else if(requestedScreen==="invoice-create" || requestedScreen==="invoice-chat"){
+  showModal("Создание счёта","В демо-версии сценарий создания счёта ещё не подключён.");
+ } else if(requestedScreen==="giveaway-create" || requestedScreen==="subscriptions-connect" || requestedScreen?.startsWith("pay-")){
+  showModal("Crypto Bot","Этот раздел пока представлен демонстрационным экраном; действие ещё не подключено.");
+ } else if(requestedScreen==="wallet-topup"){
+  openDemoTopup("USDT");
+ } else if(requestedScreen==="wallet-withdraw"){
+  showModal("Вывод USDT","Демо-вывод пока не реализован. Реальные переводы отключены.");
+ }
+}
 
 try{const tg=window.Telegram?.WebApp;tg?.ready();tg?.expand();const u=tg?.initDataUnsafe?.user;if(u){const name=[u.first_name,u.last_name].filter(Boolean).join(' ')||'Пользователь';const initial=(u.first_name||'C').slice(0,1).toUpperCase();document.getElementById('userName').textContent=name;document.getElementById('pillName').textContent=name;document.getElementById('userTag').textContent='@'+(u.username||'telegram');['smallAvatar','bigAvatar'].forEach(id=>document.getElementById(id).textContent=initial)}}catch(e){}
 </script>
