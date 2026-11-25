@@ -345,6 +345,38 @@ html,body{background:#050506;color:var(--text)}
 .history-empty{color:#8d8d95}
 @media(max-width:380px){.content{padding-left:13px;padding-right:13px}.trade-grid{gap:8px}.p2p-info{grid-template-columns:minmax(90px,1fr) auto}.balance-num{font-size:32px}}
 
+/* Wallet screen visual refinement */
+#wallet .profile-pill{margin-top:10px;margin-bottom:24px;min-height:38px}
+#wallet .balance{margin:18px 0 27px}
+#wallet .balance-num{font-size:38px;line-height:1.12;font-weight:750;letter-spacing:-1.35px;font-variant-numeric:tabular-nums}
+#wallet .balance-label{font-size:13px;margin-top:7px;color:#85858d}
+#wallet .balance-eye{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;border:1px solid #303036}
+#wallet .actions{gap:6px;margin:0 0 23px}
+#wallet .action{gap:8px;font-size:12px;font-weight:550;white-space:nowrap}
+#wallet .action .circle{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-size:24px}
+#wallet .action .circle svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#wallet .promo-carousel{margin-left:-16px;margin-right:-16px;margin-bottom:7px}
+#wallet .promo-card{min-height:104px;border-radius:17px}
+#wallet .dots{margin:0 0 22px}
+#wallet .section-title{margin:0 2px 11px;font-size:15px;font-weight:650}
+#wallet .asset-card{padding:3px 13px;border-radius:17px}
+#wallet .asset-row{min-height:69px;padding:0 1px}
+#wallet .asset-row:not(:last-child):after{content:"";position:absolute;left:48px;right:0;bottom:0;height:1px;background:#29292e}
+#wallet .asset-left{min-width:0;gap:11px}
+#wallet .coin{width:37px;height:37px;font-size:19px}
+#wallet .coin-name{font-size:14px;font-weight:650;letter-spacing:-.1px}
+#wallet .coin-price{font-size:11px;color:#8c8c94;margin-top:4px}
+#wallet .asset-right{font-size:13px;font-weight:650;min-width:0}
+#wallet .asset-right .asset-currency{font-size:12px;color:#a1a1a8;font-weight:550}
+#wallet .asset-right small{display:block;margin-top:4px;font-size:11px;color:#85858d;font-weight:450}
+#wallet .show-more{justify-content:center;padding:15px 4px;font-size:13px;font-weight:600}
+@media(max-width:360px){
+ #wallet .balance-num{font-size:34px}
+ #wallet .action .circle{width:42px;height:42px}
+ #wallet .action{font-size:11px}
+ #wallet .asset-right{font-size:12px}
+}
+
 /* Mobile Telegram viewport and safe-area refinement */
 html{min-height:100%;min-height:100svh}
 body{min-height:100%;min-height:100svh}
