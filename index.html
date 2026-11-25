@@ -821,7 +821,7 @@ button:focus-visible,.setting:focus-visible{outline:2px solid #55b9ed;outline-of
 <button type="button" class="navbtn" data-screen="market" onclick="openScreen('market')"><span class="navico"><svg viewBox="0 0 24 24"><path d="M7 3v18M17 3v18"/><rect x="3.5" y="7" width="7" height="10" rx="2"/><rect x="13.5" y="5" width="7" height="12" rx="2"/></svg></span>Биржа</button>
 <button type="button" class="navbtn" data-screen="exchange" onclick="openScreen('exchange')"><span class="navico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M7 9h10l-3-3m3 9H7l3 3"/></svg></span>Обмен</button>
 <button type="button" class="navbtn" data-screen="p2p" onclick="openScreen('p2p')"><span class="navico"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="3"/><path d="M7 7h.01M17 7h.01M7 17h.01M17 17h.01"/></svg></span>P2P</button>
-<button type="button" class="navbtn" data-screen="profile" onclick="openScreen('profile')"><span class="navico"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="5"/><path d="M3 21a9 9 0 0 1 18 0"/></svg></span>Аккаунт</button>
+<button type="button" class="navbtn" data-screen="profile" onclick="openScreen('profile')"><span class="navico nav-avatar" id="navAvatar"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="5"/><path d="M3 21a9 9 0 0 1 18 0"/></svg></span>Аккаунт</button>
 </nav>
 </main>
 <div class="modal-backdrop" id="modalBackdrop" onclick="if(event.target===this)closeModal()"><div class="modal"><button class="close" onclick="closeModal()">×</button><h3 id="modalTitle">Раздел</h3><p id="modalText"></p><div id="modalExtra"></div><button class="primary" onclick="closeModal()">Понятно</button></div></div>
@@ -1029,6 +1029,16 @@ if (targetScreen && document.getElementById(targetScreen)) {
  }
 }
 
-try{const tg=window.Telegram?.WebApp;tg?.ready();tg?.expand();const u=tg?.initDataUnsafe?.user;if(u){const name=[u.first_name,u.last_name].filter(Boolean).join(' ')||'Пользователь';const initial=(u.first_name||'C').slice(0,1).toUpperCase();document.getElementById('userName').textContent=name;document.getElementById('pillName').textContent=name;document.getElementById('userTag').textContent='@'+(u.username||'telegram');const p2pName=document.getElementById('p2pProfileName'),p2pAvatar=document.getElementById('p2pAvatar');if(p2pName)p2pName.textContent=name;if(p2pAvatar)p2pAvatar.textContent=initial;['smallAvatar','bigAvatar'].forEach(id=>document.getElementById(id).textContent=initial)}}catch(e){}
+try{const tg=window.Telegram?.WebApp;tg?.ready();tg?.expand();const u=tg?.initDataUnsafe?.user;if(u?.photo_url){const avatar=document.getElementById('navAvatar');if(avatar)avatar.innerHTML='<img src="'+String(u.photo_url).replace(/[&<>\"']/g,'')+'" alt="">';}if(u){const name=[u.first_name,u.last_name].filter(Boolean).join(' ')||'Пользователь';const initial=(u.first_name||'C').slice(0,1).toUpperCase();document.getElementById('userName').textContent=name;document.getElementById('pillName').textContent=name;document.getElementById('userTag').textContent='@'+(u.username||'telegram');const p2pName=document.getElementById('p2pProfileName'),p2pAvatar=document.getElementById('p2pAvatar');if(p2pName)p2pName.textContent=name;if(p2pAvatar)p2pAvatar.textContent=initial;['smallAvatar','bigAvatar'].forEach(id=>document.getElementById(id).textContent=initial)}}catch(e){}
 </script>
 </body></html>
+/* Bottom navigation — match IMG_7455 floating capsule */
+.bottom-nav{position:fixed;z-index:30;left:50%;right:auto;transform:translateX(-50%);bottom:calc(13px + env(safe-area-inset-bottom));width:min(316px,calc(100% - 78px));height:60px;min-height:60px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px;padding:5px 6px;border:1px solid rgba(119,143,166,.25);border-radius:36px;background:rgba(48,65,83,.94);box-shadow:0 7px 24px rgba(0,0,0,.28);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.bottom-nav .navbtn{min-width:0;min-height:0;padding:4px 1px;border:0;border-radius:28px;background:transparent;color:#e1e8ef;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10px;font-weight:500;line-height:1.1;white-space:nowrap}
+.bottom-nav .navbtn.active{background:#40566d;color:#36a9e8}
+.bottom-nav .navico,.bottom-nav .navico svg{width:22px;height:22px;display:block;flex:none}
+.bottom-nav .navico svg{fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.bottom-nav .nav-avatar{width:23px;height:23px;border-radius:50%;overflow:hidden;background:#536579}
+.bottom-nav .nav-avatar img{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%}
+.shell{padding-bottom:104px}
+@media(max-width:360px){.bottom-nav{width:calc(100% - 54px);height:56px;min-height:56px}.bottom-nav .navbtn{font-size:9px}.bottom-nav .navico,.bottom-nav .navico svg{width:20px;height:20px}}
