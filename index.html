@@ -45,9 +45,18 @@ function renderP2P(){
  tabs.forEach(b=>{const active=b.dataset.kind===p2pMode;b.classList.toggle("selected",active);b.setAttribute("aria-pressed",String(active));});
  const label=document.getElementById("p2pEmptyText");
  if(p2pMode==="offers"){
-  if(count)count.textContent="0 объявл.";
-  if(label)label.textContent="Объявлений пока нет.";
-  root.hidden=true;if(empty)empty.hidden=false;return;
+  if(count)count.textContent=demoOffersCache.length+" объявл.";
+  if(!demoOffersCache.length){if(label)label.textContent="Объявлений пока нет.";root.hidden=true;if(empty)empty.hidden=false;return;}
+  root.innerHTML=demoOffersCache.map(o=>{
+   const id=escapeDemoHtml(o.id),name=escapeDemoHtml(o.name||"U"),country=escapeDemoHtml(o.country||"");
+   const rating=escapeDemoHtml(o.rating??"—"),deals=escapeDemoHtml(o.deals??0);
+   const price=Number(o.price),available=Number(o.available),minutes=escapeDemoHtml(o.minutes??"—");
+   const limits=escapeDemoHtml(o.limits??"—"),payment=escapeDemoHtml(o.payment??"—");
+   return '<article class="p2p-card"><div class="p2p-top"><div class="p2p-user"><div class="p2p-avatar">'+name.slice(0,1)+'</div><div><div class="p2p-name">'+name+'　'+country+'</div><div class="p2p-meta">★ '+rating+' · '+deals+' сделок</div></div></div><div class="p2p-price">'+(Number.isFinite(price)?price.toFixed(2):"—")+' RUB<small>за 1 USDT</small></div></div><div class="p2p-info"><span>Доступно</span><span>'+money(available)+' USDT</span><span>Лимиты</span><span>'+limits+'</span><span>Время оплаты</span><span>'+minutes+' мин.</span><span>Способ оплаты</span><span>'+payment+'</span></div><button class="p2p-buy" type="button" data-offer-id="'+id+'">Купить USDT</button></article>';
+  }).join("");
+  root.hidden=false;if(empty)empty.hidden=true;
+  root.querySelectorAll("[data-offer-id]").forEach(button=>button.addEventListener("click",()=>openDemoBuy(button.dataset.offerId)));
+  return;
  }
  if(count)count.textContent="0 сделок";
  if(label)label.textContent="Сделок пока нет.";
