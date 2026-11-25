@@ -533,7 +533,8 @@ function selectSwapAsset(side,symbol){
 function swapDirection(){const old=swapFrom;swapFrom=swapTo;swapTo=old;renderSwapAssets();}
 let walletAssetsExpanded=false;
 function renderWalletAssets(){const root=document.getElementById('walletAssets');if(!root)return;root.innerHTML=coins.slice(0,walletAssetsExpanded?coins.length:7).map(c=>coinRow(c)).join('')+'<button class="show-more" type="button" onclick="toggleWalletAssets()"><span class="hide-icon">'+(walletAssetsExpanded?'⌃':'⌄')+'</span>'+(walletAssetsExpanded?'Скрыть':'Показать больше')+'</button>';refreshWalletAssetBalances();}
-function toggleWalletAssets(){walletAssetsExpanded=!walletAssetsExpanded;renderWalletAssets();}
+function toggleWalletAssets(){walletAssetsExpanded=!walletAssetsExpanded;renderWalletAssets();
+renderSwapAssets();}
 function refreshWalletAssetBalances(){const root=document.getElementById('walletAssets');if(!root)return;root.querySelectorAll('.asset-row').forEach(row=>{const symbol=row.querySelector('.coin-name')?.textContent;const coin=coins.find(x=>x[1]===symbol);if(coin){const amount=money(demoBalances[coin[2]]||0);row.querySelector('.asset-right').innerHTML='<span class="asset-amount">'+amount+'</span> <span class="asset-currency">'+coin[2]+'</span><small>$<span class="asset-usd">'+(coin[2]==='USDT'?amount:'0')+'</span></small>';}});}
 renderWalletAssets();
 function listCoins(mode){return coins.map(c=>'<div class="list-row"><div class="coin '+c[6]+'">'+c[0]+'</div><div class="details"><b>'+c[2]+'</b><small>'+c[1]+'</small></div>'+(mode==='deposit'?'<span class="arr">›</span>':'<div style="margin-left:auto;text-align:right">0 '+c[2]+'<small class="muted" style="display:block">$0</small></div>')+'</div>').join('')}
