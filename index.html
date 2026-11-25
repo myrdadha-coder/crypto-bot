@@ -769,7 +769,20 @@ function openScreen(id){const target=document.getElementById(id);if(!target||!ta
 function goBack(){const id=document.querySelector('.screen.active')?.id;if(['deposit-detail'].includes(id)){openScreen('deposit');return;}if(['withdraw-detail'].includes(id)){openScreen('withdraw');return;}if(['send','deposit','withdraw','history','qrpay','festival'].includes(id)){openScreen('wallet');return;}if(id&&['wallet','market','exchange','p2p','profile'].includes(id)){try{Telegram.WebApp.close();}catch(e){openScreen('wallet');}return;}if(previous&&document.getElementById(previous)){const target=previous;previous='wallet';openScreen(target);return;}openScreen('wallet');}
 document.querySelectorAll('.navbtn').forEach(b=>b.addEventListener('click',()=>openScreen(b.dataset.screen)));
 document.querySelectorAll('.filter').forEach(b=>b.addEventListener('click',()=>{b.parentElement.querySelectorAll('.filter').forEach(x=>x.classList.remove('active'));b.classList.add('active');showModal('Фильтр', 'Фильтр «'+b.textContent.trim()+'» выбран. Данные операций появятся после подключения истории транзакций.')}));
-document.querySelectorAll('.trade-tabs button').forEach(b=>b.addEventListener('click',()=>{b.parentElement.querySelectorAll('button').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');showModal(b.textContent.trim(), 'Раздел торговли.')}));
+document.querySelectorAll('.trade-tabs button').forEach(b=>b.addEventListener('click',()=>{
+ b.parentElement.querySelectorAll('button').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');
+ const submit=document.querySelector('#market .trade-grid .primary');if(submit)submit.textContent=b.textContent.trim()==='Купить'?'Пополнить USDT':'Вывести USDT';
+}));
+document.querySelectorAll('#history .history-filter').forEach((button,index)=>{
+ const choices=[['Все операции','Пополнения','Выводы','Переводы','Обмены'],['Все монеты','USDT','GRAM','BTC','ETH','TON'],['За всё время','Сегодня','7 дней','30 дней','90 дней']][index]||[];
+ const extra=choices.map(value=>'<button class="secondary-action" onclick="selectHistoryFilter('+index+', '+JSON.stringify(value)+')">'+value+'</button>').join('');
+ button.addEventListener('click',()=>showModal(button.textContent.trim(),'Выберите значение.',extra));
+});
+function selectHistoryFilter(index,value){
+ const button=document.querySelectorAll('#history .history-filter')[index];
+ if(button)button.textContent=value+' ⌄';
+ closeModal();
+}
 document.querySelectorAll('.pair').forEach(b=>b.addEventListener('click',()=>{}));
 
 let balanceVisible=true;
