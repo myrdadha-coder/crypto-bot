@@ -466,6 +466,30 @@ button:focus-visible,[role="button"]:focus-visible{outline:2px solid #62b1ff;out
 #p2p .p2p-list{padding-bottom:12px}
 @media(max-width:380px){#p2p .p2p-landing{padding-top:22px}#p2p .p2p-landing p{font-size:14px}#p2p .p2p-cta-row{gap:9px}}
 
+
+/* Visual parity pass 01 — restore Crypto Bot blue-gray night palette */
+:root{--bg:#151f29;--panel:#202d39;--panel2:#263442;--line:#3a4651;--text:#f4f6f8;--muted:#929ba6;--blue:#39a9e8;--blue2:#53b5e9;--red:#ff5057;--green:#20ae68}
+html,body{background:#000;color:var(--text)}
+.shell,.tghead{background:var(--bg)}
+.card,.asset-card,.list-card,.exchange-asset-card,.profile-card,.settings-group,.festival-score,.qr-card,#profile .settings-group,.modal,.p2p-card,.swap-panel,.swap-info,.exchange-receive,.festival-task{background:var(--panel);border-color:var(--line)}
+.profile-pill{background:#263442;border-color:#354351;color:#d5dde5}
+.amount-field,.exchange-input-wrap,.modal input,.modal select,.trade-box,.swap-line{background:#1d2a36;border-color:#34424e;color:var(--text)}
+.filters .filter,.history-filter{background:#202d39;border-color:#3a4651;color:#cbd4dc}
+#wallet .asset-row:not(:last-child):after{background:var(--line)}
+#wallet .balance-label,#wallet .coin-price,#wallet .asset-right small{color:var(--muted)}
+#wallet .balance-eye{background:#2b3a48;border-color:#3a4b5b}
+#profile .profile-card,#profile .settings-group{background:var(--panel);border-color:var(--line)}
+#profile .setting{border-color:var(--line)}
+.modal{border-color:var(--line)}
+.modal .close{background:#2b3a48;color:#dce5ed}
+.p2p-card{border-color:var(--line)}
+.p2p-info{border-color:var(--line)}
+.swap-line{border-color:#344957}
+.swap-middle button{background:#293543;border-color:#263746}
+.exchange-receive{background:var(--panel);border-color:var(--line)}
+.qr-card{background:var(--panel)}
+.festival-task{background:var(--panel);border-color:var(--line)}
+
 </style>
 </head>
 <body>
