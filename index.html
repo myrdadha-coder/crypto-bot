@@ -725,6 +725,17 @@ button:focus-visible,.setting:focus-visible{outline:2px solid #55b9ed;outline-of
  #wallet .promo-card{flex-basis:calc(100% - 20px)}
  #wallet .asset-row{min-height:60px}
 }
+
+/* Wallet carousel pagination and final touch */
+#wallet #promoDots{display:flex;align-items:center;justify-content:center;gap:6px;margin:7px 0 17px;letter-spacing:0}
+#wallet .promo-dot{width:5px;height:5px;min-width:5px;padding:0;border:0;border-radius:10px;background:#617383;opacity:.8;transition:width .18s ease,background .18s ease,opacity .18s ease}
+#wallet .promo-dot.active{width:17px;background:#55b9ed;opacity:1}
+#wallet .promo-dot:focus-visible{outline:2px solid #8bd5ff;outline-offset:3px}
+#wallet .section-title{min-height:22px}
+#wallet .section-title .blue{display:inline-flex;align-items:center;gap:5px}
+#wallet .promo-card{scroll-snap-stop:always}
+#wallet .asset-card{margin-bottom:14px}
+@media(prefers-reduced-motion:reduce){#wallet .promo-dot{transition:none}}
 </style>
 </head>
 <body>
@@ -740,7 +751,7 @@ button:focus-visible,.setting:focus-visible{outline:2px solid #55b9ed;outline-of
 <button class="action" onclick="openScreen('withdraw')"><span class="circle">↗</span>Вывести</button>
 <button class="action" onclick="openScreen('history')"><span class="circle"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 1 0 2.2-5.7L3.5 8.5"/><path d="M3.5 4.5v4h4"/><path d="M12 7.5V12l3 2"/></svg></span>История</button>
 </div>
-<div class="promo-carousel"><div class="promo-track" id="promoTrack"><button class="promo-card promo-autumn" onclick="openPromo('festival')"><span class="promo-icon">🍂</span><span class="promo-copy"><b>Осенний фестиваль</b><span>Получайте баллы за активность в P2P, на бирже и в обменах. До 30 ноября.</span></span><span class="promo-arrow">›</span></button><button class="promo-card promo-p2p" onclick="openPromo('p2p')"><span class="promo-icon">💠</span><span class="promo-copy"><b>P2P Маркет</b><span>Покупайте и продавайте криптовалюту напрямую у других пользователей.</span></span><span class="promo-arrow">›</span></button><button class="promo-card promo-qr" onclick="openPromo('qr')"><span class="promo-icon">▦</span><span class="promo-copy"><b>Оплата по QR-коду</b><span>Оплачивайте покупки в магазинах РФ с помощью USDT.</span></span><span class="promo-arrow">›</span></button><button class="promo-card promo-swap" onclick="openPromo('swap')"><span class="promo-icon">⇄</span><span class="promo-copy"><b>Быстрые обмены</b><span>Обменивайте одну криптовалюту на другую по рыночной цене.</span></span><span class="promo-arrow">›</span></button></div></div><div class="dots" id="promoDots"><i>●</i> ● ● ●</div>
+<div class="promo-carousel"><div class="promo-track" id="promoTrack"><button class="promo-card promo-autumn" onclick="openPromo('festival')"><span class="promo-icon">🍂</span><span class="promo-copy"><b>Осенний фестиваль</b><span>Получайте баллы за активность в P2P, на бирже и в обменах. До 30 ноября.</span></span><span class="promo-arrow">›</span></button><button class="promo-card promo-p2p" onclick="openPromo('p2p')"><span class="promo-icon">💠</span><span class="promo-copy"><b>P2P Маркет</b><span>Покупайте и продавайте криптовалюту напрямую у других пользователей.</span></span><span class="promo-arrow">›</span></button><button class="promo-card promo-qr" onclick="openPromo('qr')"><span class="promo-icon">▦</span><span class="promo-copy"><b>Оплата по QR-коду</b><span>Оплачивайте покупки в магазинах РФ с помощью USDT.</span></span><span class="promo-arrow">›</span></button><button class="promo-card promo-swap" onclick="openPromo('swap')"><span class="promo-icon">⇄</span><span class="promo-copy"><b>Быстрые обмены</b><span>Обменивайте одну криптовалюту на другую по рыночной цене.</span></span><span class="promo-arrow">›</span></button></div></div><div class="dots" id="promoDots" aria-label="Слайды баннеров"><button class="promo-dot active" type="button" aria-label="Баннер 1" aria-current="true" onclick="goPromoSlide(0)"></button><button class="promo-dot" type="button" aria-label="Баннер 2" onclick="goPromoSlide(1)"></button><button class="promo-dot" type="button" aria-label="Баннер 3" onclick="goPromoSlide(2)"></button><button class="promo-dot" type="button" aria-label="Баннер 4" onclick="goPromoSlide(3)"></button></div>
 <div class="section-title"><span class="blue">Мои активы ›</span></div><div class="asset-card" id="walletAssets"></div>
 </section>
 <section class="screen" id="send"><div class="page-title">Перевод контакту</div><div class="list-card"><div class="list-row" onclick="chooseDemoRecipient()"><div class="coin" style="background:#299fe8">➤</div><div class="details"><b id="sendRecipientName">Новому получателю</b><small>Сообщением в Telegram</small></div><span class="arr">›</span></div><div class="list-row" onclick="chooseSendAsset()"><div class="coin usdt">₮</div><div class="details"><b id="sendAssetName">Tether</b><small class="blue">Изменить монету ›</small></div><div style="margin-left:auto;text-align:right" id="sendAssetBalance">0 USDT</div></div></div><input class="amount-field" id="sendAmount" type="number" min="0" step="any" placeholder="Сумма"><div class="helper">Доступно: <b id="sendAvailable">0 USDT</b> · <span class="blue" onclick="openScreen('deposit')">Пополнить ›</span></div><button class="primary" onclick="reviewDemoSend()">Продолжить</button><div class="helper"></div></section>
@@ -810,6 +821,38 @@ function swapDirection(){const old=swapFrom;swapFrom=swapTo;swapTo=old;renderSwa
 let walletAssetsExpanded=false;
 function renderWalletAssets(){const root=document.getElementById('walletAssets');if(!root)return;root.innerHTML=coins.slice(0,walletAssetsExpanded?coins.length:7).map(c=>coinRow(c)).join('')+'<button class="show-more" type="button" onclick="toggleWalletAssets()"><span class="hide-icon">'+(walletAssetsExpanded?'⌃':'⌄')+'</span>'+(walletAssetsExpanded?'Скрыть':'Показать больше')+'</button>';refreshWalletAssetBalances();}
 function toggleWalletAssets(){walletAssetsExpanded=!walletAssetsExpanded;renderWalletAssets();
+function goPromoSlide(index){
+ const track=document.getElementById("promoTrack");
+ const cards=track?.querySelectorAll(".promo-card");
+ if(!track||!cards?.length)return;
+ const target=cards[Math.max(0,Math.min(index,cards.length-1))];
+ track.scrollTo({left:target.offsetLeft-track.offsetLeft,behavior:"smooth"});
+}
+function syncPromoDots(){
+ const track=document.getElementById("promoTrack");
+ const dots=document.querySelectorAll("#promoDots .promo-dot");
+ if(!track||!dots.length)return;
+ const cards=track.querySelectorAll(".promo-card");
+ let active=0,best=Infinity;
+ cards.forEach((card,index)=>{
+  const distance=Math.abs((card.offsetLeft-track.offsetLeft)-track.scrollLeft);
+  if(distance<best){best=distance;active=index;}
+ });
+ dots.forEach((dot,index)=>{
+  const selected=index===active;
+  dot.classList.toggle("active",selected);
+  if(selected)dot.setAttribute("aria-current","true");else dot.removeAttribute("aria-current");
+ });
+}
+(function bindPromoCarousel(){
+ const track=document.getElementById("promoTrack");
+ if(!track)return;
+ let frame=0;
+ track.addEventListener("scroll",()=>{if(frame)return;frame=requestAnimationFrame(()=>{frame=0;syncPromoDots();});},{passive:true});
+ window.addEventListener("resize",syncPromoDots,{passive:true});
+ syncPromoDots();
+})();
+
 renderSwapAssets();}
 function refreshWalletAssetBalances(){const root=document.getElementById('walletAssets');if(!root)return;root.querySelectorAll('.asset-row').forEach(row=>{const symbol=row.querySelector('.coin-name')?.textContent;const coin=coins.find(x=>x[1]===symbol);if(coin){const amount=money(demoBalances[coin[2]]||0);row.querySelector('.asset-right').innerHTML='<span class="asset-amount">'+amount+'</span> <span class="asset-currency">'+coin[2]+'</span><small>$<span class="asset-usd">'+(coin[2]==='USDT'?amount:'0')+'</span></small>';}});}
 renderWalletAssets();
