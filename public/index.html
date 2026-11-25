@@ -11,7 +11,7 @@ const tgApp = window.Telegram?.WebApp;
 const demoHeaders = () => ({ "content-type":"application/json", "X-Telegram-Init-Data": tgApp?.initData || "" });
 let demoOffersCache = [];
 let demoBalances = {};
-let p2pMode = "buy";
+let p2pMode = "deals";
 async function apiDemo(path, body) {
   const response = await fetch("https://crypto-bot.myrdadha-da2.workers.dev/api/demo/"+path, {method:body?"POST":"GET",headers:demoHeaders(),body:body?JSON.stringify(body):undefined});
   const data = await response.json().catch(()=>({error:"Ошибка ответа сервера"}));
@@ -40,24 +40,18 @@ function openP2PAction(kind){
 }
 function renderP2P(){
  const root=document.getElementById("p2pOffers");if(!root)return;
- const count=document.getElementById("p2pCount");
+ const empty=document.getElementById("p2pEmpty"),count=document.getElementById("p2pCount");
  const tabs=document.querySelectorAll("#p2pTabs button");
  tabs.forEach(b=>{const active=b.dataset.kind===p2pMode;b.classList.toggle("selected",active);b.setAttribute("aria-pressed",String(active));});
- if(p2pMode==="sell"){
+ const label=document.getElementById("p2pEmptyText");
+ if(p2pMode==="offers"){
   if(count)count.textContent="0 объявл.";
-  root.innerHTML='<div class="empty"><div class="doc">⇄</div><span>У вас пока нет объявлений на продажу</span></div>';
-  return;
+  if(label)label.textContent="Объявлений пока нет.";
+  root.hidden=true;if(empty)empty.hidden=false;return;
  }
- if(count)count.textContent=demoOffersCache.length+" объявл.";
- if(!demoOffersCache.length){root.innerHTML='<div class="empty"><div class="doc">⇄</div><span>Пока нет доступных объявлений</span></div>';return;}
- root.innerHTML=demoOffersCache.map(o=>{
-  const id=escapeDemoHtml(o.id),name=escapeDemoHtml(o.name||"U"),country=escapeDemoHtml(o.country||"");
-  const rating=escapeDemoHtml(o.rating??"—"),deals=escapeDemoHtml(o.deals??0);
-  const price=Number(o.price),available=Number(o.available),minutes=escapeDemoHtml(o.minutes??"—");
-  const limits=escapeDemoHtml(o.limits??"—"),payment=escapeDemoHtml(o.payment??"—");
-  return '<article class="p2p-card"><div class="p2p-top"><div class="p2p-user"><div class="p2p-avatar">'+name.slice(0,1)+'</div><div><div class="p2p-name">'+name+'　'+country+'</div><div class="p2p-meta">★ '+rating+' · '+deals+' сделок</div></div></div><div class="p2p-price">'+(Number.isFinite(price)?price.toFixed(2):"—")+' RUB<small>за 1 USDT</small></div></div><div class="p2p-info"><span>Доступно</span><span>'+money(available)+' USDT</span><span>Лимиты</span><span>'+limits+'</span><span>Время оплаты</span><span>'+minutes+' мин.</span><span>Способ оплаты</span><span>'+payment+'</span></div><button class="p2p-buy" type="button" data-offer-id="'+id+'">Купить USDT</button></article>';
- }).join("");
- root.querySelectorAll("[data-offer-id]").forEach(button=>button.addEventListener("click",()=>openDemoBuy(button.dataset.offerId)));
+ if(count)count.textContent="0 сделок";
+ if(label)label.textContent="Сделок пока нет.";
+ root.hidden=true;if(empty)empty.hidden=false;
 }
 function openDemoTopup(currency){
  showModal("Пополнение "+currency,"Выберите сумму пополнения.",'<label>Сумма пополнения · '+currency+'</label><input id="demoAmount" type="number" min="0.01" max="100000" step="any" placeholder="Например, 100"><button class="primary" onclick="submitDemoTopup(\''+currency+'\')">Продолжить</button>');
@@ -104,11 +98,9 @@ function submitSwap(){const amount=Number(document.getElementById("swapAmount")?
 function initDemoUi(){
  refreshMarketPrices();setInterval(refreshMarketPrices,60000);
  document.querySelectorAll("#p2pTabs button").forEach(b=>b.addEventListener("click",()=>{
-  const selected=b.dataset.kind==="offers"?"offers":"deals";
-  document.querySelectorAll("#p2pTabs button").forEach(tab=>{const active=tab===b;tab.classList.toggle("selected",active);tab.setAttribute("aria-selected",String(active));});
-  const label=document.getElementById("p2pEmptyText");if(label)label.textContent=selected==="offers"?"Объявлений пока нет.":"Сделок пока нет.";
+  p2pMode=b.dataset.kind==="offers"?"offers":"deals";renderP2P();
  }));
- refreshDemoState();
+ renderP2P();renderSwapAssets();refreshDemoState();
 }
 window.addEventListener("DOMContentLoaded",initDemoUi,{once:true});
 
@@ -489,6 +481,108 @@ html,body{background:#000;color:var(--text)}
 .exchange-receive{background:var(--panel);border-color:var(--line)}
 .qr-card{background:var(--panel)}
 .festival-task{background:var(--panel);border-color:var(--line)}
+
+
+/* Visual pass 02 — consistent screen system */
+:root{--bg:#151f29;--panel:#202d39;--panel2:#263442;--line:#394957;--text:#f4f7fa;--muted:#929eaa;--blue:#39a9e8}
+body{background:#000}
+.shell{background:var(--bg);padding-bottom:104px}
+.content{padding-left:16px;padding-right:16px}
+.tghead{height:58px;padding:7px 16px;background:rgba(21,31,41,.97);border-bottom:1px solid rgba(255,255,255,.035);backdrop-filter:blur(16px)}
+.tgside{font-size:15px;color:#d7e0e8}.tgside.right{font-size:21px}.tgtitle{font-size:16px}.tgtitle small{font-size:11px;color:#8996a2}
+.bottom-nav{bottom:max(12px,env(safe-area-inset-bottom));width:min(370px,calc(100% - 34px));height:66px;background:rgba(34,48,61,.97);border-color:#40515f;box-shadow:0 9px 28px #0006}
+.navbtn{font-size:10px;font-weight:550;color:#aebbc6}.navbtn.active{background:#344b60;color:#54b8ec}.navico,.navico svg{width:22px;height:22px}
+.page-title{margin:23px 2px 15px;color:#eaf0f5;font-size:20px;font-weight:700;letter-spacing:-.3px}
+.list-card,.asset-card,.card,.profile-card,.settings-group{background:var(--panel);border:1px solid rgba(148,170,188,.08);border-radius:19px;overflow:hidden}
+.list-card{padding:0 14px}.list-row{min-height:76px}.list-row:not(:last-child):after{background:var(--line);left:51px}
+.list-row .coin{width:40px;height:40px;font-size:22px}
+.list-row .details b{font-size:15px;font-weight:650;color:#f1f5f8}
+.list-row .details small{font-size:12px;color:#94a2ae}
+.amount-field{height:56px;margin-top:16px;background:#1a2732;border:1px solid #394b59;border-radius:15px;color:#f5f8fa}
+.amount-field:focus,.modal input:focus{outline:2px solid #39a9e866;border-color:#39a9e8}
+.helper{font-size:12px;line-height:1.5;color:#8f9ca8;margin:10px 4px 17px}
+.primary{min-height:49px;border:0;border-radius:14px;background:linear-gradient(180deg,#43b5ec,#2796d5);color:white;font:inherit;font-size:15px;font-weight:700;box-shadow:inset 0 1px 0 #ffffff30}
+.primary:active,.action:active,.navbtn:active{filter:brightness(1.12)}
+/* Wallet */
+#wallet .profile-pill{margin-top:8px;margin-bottom:22px;background:#202e3a;border:1px solid #354756;color:#d7e0e8}
+#wallet .balance{margin:17px 0 25px}
+#wallet .balance-num{font-size:39px;letter-spacing:-1.5px}
+#wallet .balance-label{color:#94a2ae}
+#wallet .balance-eye{background:#293b49;border:1px solid #3c5262;color:#e0eaf1}
+#wallet .actions{gap:2px;margin-bottom:23px}
+#wallet .action{font-size:12px;color:#51b7ed}
+#wallet .action .circle{width:46px;height:46px;box-shadow:0 3px 9px #0002}
+#wallet .promo-card{min-height:108px;border-radius:16px}
+#wallet .section-title{color:#51b7ed}
+#wallet .asset-card{border:0;background:#202d39;border-radius:18px}
+#wallet .asset-row{min-height:67px}
+#wallet .asset-row:not(:last-child):after{background:#3a4854}
+#wallet .asset-right{font-variant-numeric:tabular-nums}
+#wallet .show-more{color:#51b7ed}
+/* Exchange */
+#exchange{padding-top:15px}
+#exchange .swap-caption{display:flex;align-items:center;justify-content:space-between;margin:5px 4px 10px;color:#96a4b0;font-size:13px;font-weight:600}
+#exchange .swap-wallet{display:flex;align-items:center;gap:6px;color:#c3d0da;font-size:12px}
+#exchange .swap-wallet-icon{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+#exchange .swap-wallet a{color:#4bb6eb;font-weight:750;margin-left:5px}
+#exchange .swap-asset{width:100%;min-height:92px;padding:15px 16px;border:1px solid #3b4b58;border-radius:17px;background:#202e3a;color:#f3f7fa;display:flex;align-items:center;gap:12px;text-align:left}
+#exchange .swap-asset .coin{width:43px;height:43px;font-size:23px}
+#exchange .swap-asset strong{font-size:16px;font-weight:700}
+#exchange .swap-asset strong i{font-style:normal;color:#8495a2;font-size:18px;margin-left:3px}
+#exchange .swap-amount{margin-left:auto;font-size:24px;font-weight:650;letter-spacing:-.5px;color:#f5f8fa}
+#exchange .swap-divider{height:49px;display:flex;align-items:center;gap:13px}
+#exchange .swap-divider span{height:1px;background:#394b59;flex:1}
+#exchange .swap-divider button{width:38px;height:38px;border-radius:50%;border:1px solid #405361;background:#2a3a47;color:#55b9ec;display:grid;place-items:center}
+#exchange .swap-divider svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#exchange .swap-receive-caption{margin-top:1px}
+#exchange .swap-topup{width:100%;margin-top:24px}
+.swap-coin-list{max-height:54vh;overflow:auto}
+.swap-coin-option{width:100%;display:flex;align-items:center;gap:12px;padding:10px 2px;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--text);text-align:left}
+.swap-coin-option small{display:block;color:var(--muted);margin-top:3px}.swap-coin-check{margin-left:auto;color:var(--blue)}
+/* Other screens */
+#send .list-card{margin-bottom:15px}
+#send .primary,#withdraw-detail .primary,#deposit-detail .primary{width:100%;margin-top:12px}
+#deposit .list-row,#withdraw .list-row{min-height:72px}
+#deposit-detail .qr-card{padding:20px 16px;border:1px solid #3b4a57;border-radius:19px}
+#deposit-detail .fake-qr{margin:20px auto;width:176px;height:176px}
+#withdraw-detail .amount-field{display:block}
+#history .history-filters{display:flex;gap:8px;overflow:auto;padding:6px 0 0}
+#history .history-filter{flex:none;border-radius:22px;padding:10px 13px;background:#202d39;border:1px solid #3a4a58;color:#c5d0d9;font-size:12px}
+#history .history-empty{min-height:54vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;color:#93a0ab;font-size:14px}
+#market .trade-head{padding:12px 2px 14px;border-bottom:1px solid var(--line);font-weight:700}
+#market .market-stats{padding:13px 0;color:#8e9ba7;font-size:11px}
+#market .trade-grid{gap:10px}
+#market .trade-box{border:1px solid #3a4a58;border-radius:12px;padding:10px;background:#202d39}
+#market .trade-box input{width:100%;background:transparent;border:0;color:#f5f7f9;font:inherit;outline:none}
+#market .trade-tabs button{border-radius:9px}
+#market .orderbook{font-size:11px}
+#market .filters{overflow:auto;white-space:nowrap}
+#p2p .p2p-landing{padding-top:22px}
+#p2p .p2p-brand-icon{box-shadow:0 8px 22px #168cc533}
+#p2p .p2p-account-tabs{margin-left:-16px;margin-right:-16px}
+#p2p .p2p-filters .filter{flex:none}
+#profile .profile-card{padding:16px;display:flex;align-items:center;gap:13px;margin:10px 0 15px}
+#profile .profile-card .mini-avatar{width:48px;height:48px;font-size:17px}
+#profile .settings-group{padding:0 13px;margin:0 0 12px}
+#profile .setting{min-height:55px;border-color:#3a4854;font-size:14px;color:#e5ebf0}
+#profile .setting-icon{width:31px;height:31px;border-radius:9px}
+#profile .setting-icon svg{width:18px;height:18px}
+#festival .festival-hero{border-radius:20px;overflow:hidden}
+#festival .festival-score,#festival .festival-task{border:1px solid #394957;border-radius:15px}
+#qrpay .qr-scan-head{margin:0 -2px 15px}
+#qrpay .qr-camera-stage{border-radius:22px;overflow:hidden;background:#1d2b37}
+#qrpay .qr-demo-scan{width:100%;margin-top:16px}
+#qrpay .qr-camera-actions{margin-top:14px}
+.modal{background:#202d39;border:1px solid #40515f;color:#f1f5f8}
+.modal p{color:#a9b5bf}
+.modal input,.modal select{width:100%;min-height:46px;border-radius:12px;padding:0 13px;margin:8px 0;background:#182631;border:1px solid #3a4c5a;color:white}
+@media(max-width:380px){
+ .content{padding-left:13px;padding-right:13px}
+ #wallet .balance-num{font-size:35px}
+ #exchange .swap-asset{min-height:84px;padding:12px}
+ #exchange .swap-amount{font-size:21px}
+ #profile .setting{font-size:13px}
+}
 
 </style>
 </head>
