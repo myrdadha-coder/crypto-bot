@@ -591,6 +591,6 @@ if (targetScreen && document.getElementById(targetScreen)) {
  }
 }
 
-try{const tg=window.Telegram?.WebApp;tg?.ready();tg?.expand();const u=tg?.initDataUnsafe?.user;if(u){const name=[u.first_name,u.last_name].filter(Boolean).join(' ')||'Пользователь';const initial=(u.first_name||'C').slice(0,1).toUpperCase();document.getElementById('userName').textContent=name;document.getElementById('pillName').textContent=name;document.getElementById('userTag').textContent='@'+(u.username||'telegram');['smallAvatar','bigAvatar'].forEach(id=>document.getElementById(id).textContent=initial)}}catch(e){}
+try{const tg=window.Telegram?.WebApp;tg?.ready();tg?.expand();const u=tg?.initDataUnsafe?.user;if(u){const name=[u.first_name,u.last_name].filter(Boolean).join(' ')||'Пользователь';const initial=(u.first_name||'C').slice(0,1).toUpperCase();document.getElementById('userName').textContent=name;document.getElementById('pillName').textContent=name;document.getElementById('userTag').textContent='@'+(u.username||'telegram');const p2pName=document.getElementById('p2pProfileName'),p2pAvatar=document.getElementById('p2pAvatar');if(p2pName)p2pName.textContent=name;if(p2pAvatar)p2pAvatar.textContent=initial;['smallAvatar','bigAvatar'].forEach(id=>document.getElementById(id).textContent=initial)}}catch(e){}
 </script>
 </body></html>
