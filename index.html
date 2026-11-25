@@ -345,6 +345,23 @@ html,body{background:#050506;color:var(--text)}
 .history-empty{color:#8d8d95}
 @media(max-width:380px){.content{padding-left:13px;padding-right:13px}.trade-grid{gap:8px}.p2p-info{grid-template-columns:minmax(90px,1fr) auto}.balance-num{font-size:32px}}
 
+/* Mobile Telegram viewport and safe-area refinement */
+html{min-height:100%;min-height:100svh}
+body{min-height:100%;min-height:100svh}
+.shell{min-height:100vh;min-height:100svh;padding-bottom:calc(92px + env(safe-area-inset-bottom))}
+.tghead{height:calc(68px + env(safe-area-inset-top));padding-top:calc(8px + env(safe-area-inset-top));}
+.bottom-nav{
+  width:min(560px,calc(100% - 24px));
+  bottom:calc(10px + env(safe-area-inset-bottom));
+  min-height:64px;
+}
+.modal-backdrop{padding:12px 12px calc(12px + env(safe-area-inset-bottom));}
+.modal{max-height:calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));overflow-y:auto;overscroll-behavior:contain}
+button:focus-visible,[role="button"]:focus-visible{outline:2px solid #62b1ff;outline-offset:2px}
+@media(min-width:600px){
+  .bottom-nav{width:min(560px,calc(100% - 32px))}
+}
+
 </style>
 </head>
 <body>
