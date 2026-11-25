@@ -273,6 +273,68 @@ html,body{background:#09090b;color:var(--text)}
 .primary{background:#3390ec}
 button{ -webkit-tap-highlight-color:transparent }
 
+
+/* Pass 2: consistent reference styling across secondary screens */
+:root{--bg:#0b0b0d;--panel:#171719;--panel2:#202024;--line:#2a2a2e;--text:#f5f5f7;--muted:#929298;--blue:#3390ec;--blue2:#3390ec}
+html,body{background:#050506;color:var(--text)}
+.shell{background:#0b0b0d}
+.tghead{background:rgba(11,11,13,.96);border-bottom:1px solid #1d1d20;backdrop-filter:blur(18px)}
+.tgtitle small{color:#85858d}
+.content{padding-left:16px;padding-right:16px}
+.page-title,.section-title{color:#929298;font-size:15px;font-weight:600;margin:22px 4px 12px}
+.card,.asset-card,.list-card,.exchange-asset-card,.profile-card,.settings-group,.festival-score,.qr-card{background:#171719;border:1px solid #252529;border-radius:18px}
+.profile-pill{background:#171719;border-color:#29292e;color:#e5e5e8}
+.mini-avatar{background:#34343b}
+.balance{margin:16px 0 25px}.balance-num{font-size:36px;font-weight:700}
+.balance-eye{background:#202025;color:#c8c8ce}
+.action .circle{background:#202024;color:#3390ec;border:1px solid #2c2c32}
+.action{color:#3390ec}
+.asset-card{padding:4px 13px}
+.asset-row{min-height:68px}.asset-row:not(:last-child):after{background:#29292e}
+.coin{box-shadow:none}
+.show-more{color:#d0d0d5}
+.hide-icon{background:#222227;color:#aeb0b7}
+.bottom-nav{background:rgba(26,26,30,.96);border-color:#35353c;box-shadow:0 8px 28px #0009}
+.navbtn{color:#9c9ca4}.navbtn.active{background:#292930;color:#3390ec}
+.list-card{padding:0 15px}
+.list-row{min-height:76px}.list-row:not(:last-child):after{background:#29292e}
+.list-row .details b{font-size:15px;font-weight:600}
+.list-row .details small{font-size:12px;color:#8b8b93}
+.amount-field,.exchange-input-wrap,.modal input,.modal select,.trade-box,.swap-line{background:#101013;border:1px solid #303036;color:#f5f5f7}
+.amount-field{height:56px;border-radius:14px;margin:18px 0 6px}
+.primary,.swap-submit{background:#3390ec;border-radius:14px;height:52px;font-size:16px;font-weight:650}
+.helper{color:#85858d}
+.filters .filter,.history-filter{background:#17171b;border-color:#303036;color:#aaaab2}
+.filters .filter.active,.history-filter.active{background:#1d3550;border-color:#3390ec;color:#62b1ff}
+.trade-tabs{background:#17171b;border:1px solid #2a2a30}
+.trade-tabs button.selected{background:#1b3a2e;color:#5ad69a}
+.trade-box{border-radius:16px;padding:15px}
+.market-stats{border-color:#2b2b30}
+#profile .profile-card{background:#171719;border-color:#2a2a30}
+#profile .settings-group{background:#171719;border-color:#29292e}
+#profile .setting{border-color:#29292e}
+.setting-icon{box-shadow:none}
+.modal-backdrop{background:#000b}
+.modal{background:#171719;border:1px solid #2a2a30;border-bottom:0}
+.modal .close{background:#29292f;color:#ddd}
+.modal p{color:#a1a1a9}
+.modal label{color:#a1a1a9}
+.p2p-card{background:#171719;border-color:#2b2b31}
+.p2p-info{border-color:#2b2b31}
+.p2p-buy{background:#3390ec}
+.swap-panel{background:#171719;border-color:#2b2b31}
+.swap-line{background:#101013;border-color:#303036}
+.swap-middle button{background:#24242a;border-color:#171719}
+.swap-info{background:#171719}
+.exchange-receive{background:#171719;border:1px solid #29292e}
+.payment-test-note{background:#14231e;border-color:#24543f}
+.qr-camera-stage{background:radial-gradient(ellipse at 50% 40%,#202027,#0c0c0f 72%)}
+.qr-card{background:#171719}
+.festival-hero{border-radius:20px}
+.festival-task{background:#171719;border:1px solid #29292e;border-radius:15px}
+.history-empty{color:#8d8d95}
+@media(max-width:380px){.content{padding-left:13px;padding-right:13px}.trade-grid{gap:8px}.p2p-info{grid-template-columns:minmax(90px,1fr) auto}.balance-num{font-size:32px}}
+
 </style>
 </head>
 <body>
