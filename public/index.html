@@ -726,6 +726,44 @@ button:focus-visible,.setting:focus-visible{outline:2px solid #55b9ed;outline-of
  #wallet .asset-row{min-height:60px}
 }
 
+/* Wallet reference match — IMG_7455 */
+#wallet .wallet-toolbar{display:grid;grid-template-columns:40px minmax(0,1fr) 40px 40px;align-items:center;gap:8px;margin:26px 0 23px}
+#wallet .wallet-tool{width:32px;height:32px;padding:0;justify-self:center;display:grid;place-items:center;border:1px solid #465665;border-radius:50%;background:#2b3948;color:#8d9aa7}
+#wallet .wallet-tool svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#wallet .profile-pill{height:32px;min-height:32px;margin:0 auto;padding:3px 10px;gap:7px;border-radius:20px;background:#263442;border-color:#354452;color:#b6c0ca;font-size:14px;font-weight:500}
+#wallet .mini-avatar{width:25px;height:25px}
+#wallet .balance{margin:0 0 24px}
+#wallet .balance-line{min-height:42px;gap:8px}
+#wallet .balance-num{font-size:35px;line-height:1.1}
+#wallet .balance-eye{width:28px;height:28px;background:transparent;border:0;color:#9aa5b0;font-size:20px}
+#wallet .balance-label{font-size:14px;line-height:19px;margin-top:8px}
+#wallet .actions{gap:6px;margin:0 0 19px}
+#wallet .action{gap:8px;font-size:13px;font-weight:500}
+#wallet .action .circle{width:39px;height:39px;border:0;background:linear-gradient(145deg,#5bc0ed,#2794d4);color:#fff;font-size:25px;box-shadow:none}
+#wallet .action .circle svg{width:21px;height:21px}
+#wallet .promo-carousel{margin:0 -15px 0}
+#wallet .promo-track{gap:9px;padding:0 15px 2px}
+#wallet .promo-card{min-height:72px;padding:10px 13px;border:0;border-radius:10px;gap:12px;box-shadow:none}
+#wallet .promo-autumn{background:#302725;border-left:4px solid #e87519;border-radius:9px}
+#wallet .promo-autumn:before{display:none}
+#wallet .promo-autumn .promo-icon{width:54px;height:52px;border-radius:0;background:transparent;font-size:30px}
+#wallet .promo-autumn .promo-copy b{color:#e66a19;font-size:15px;font-weight:600;margin-bottom:3px}
+#wallet .promo-autumn .promo-copy span{color:#f1f1f1;font-size:13px;line-height:1.35}
+#wallet .promo-autumn .promo-arrow{color:#e66a19}
+#wallet #promoDots{margin:7px 0 23px;gap:6px}
+#wallet .promo-dot{width:6px;height:6px;min-width:6px}
+#wallet .promo-dot.active{width:6px}
+#wallet .section-title{margin:0 12px 10px;font-size:15px;font-weight:600;color:#42aee9}
+#wallet .asset-card{padding:4px 12px;border-radius:21px}
+#wallet .asset-row{min-height:63px}
+#wallet .asset-left{gap:11px}
+#wallet .coin{width:39px;height:39px}
+#wallet .coin-name{font-size:15px}
+#wallet .coin-price{font-size:13px;margin-top:2px}
+#wallet .asset-right{font-size:15px}
+#wallet .asset-right small{font-size:13px;margin-top:2px}
+@media(max-width:370px){#wallet .wallet-toolbar{grid-template-columns:34px minmax(0,1fr) 34px 34px;gap:5px}#wallet .profile-pill{font-size:12px}}
+
 /* Wallet carousel pagination and final touch */
 #wallet #promoDots{display:flex;align-items:center;justify-content:center;gap:6px;margin:7px 0 17px;letter-spacing:0}
 #wallet .promo-dot{width:5px;height:5px;min-width:5px;padding:0;border:0;border-radius:10px;background:#617383;opacity:.8;transition:width .18s ease,background .18s ease,opacity .18s ease}
@@ -743,7 +781,7 @@ button:focus-visible,.setting:focus-visible{outline:2px solid #55b9ed;outline-of
 <header class="tghead"><div class="tgside" id="back" onclick="goBack()">Закрыть</div><div class="tgtitle">Crypto Bot<small>мини-приложение</small></div><div class="tgside right">⊙</div></header>
 <div class="content">
 <section class="screen active" id="wallet">
-<div class="profile-pill"><span class="mini-avatar" id="smallAvatar">C</span><span id="pillName">Пользователь</span></div>
+<div class="wallet-toolbar"><button class="wallet-tool" type="button" aria-label="Сканировать QR-код" onclick="openScreen(\'qrpay\')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H6a3 3 0 0 0-3 3v2m13-5h2a3 3 0 0 1 3 3v2M3 16v2a3 3 0 0 0 3 3h2m13-5v2a3 3 0 0 1-3 3h-2"/><path d="M7 12a5 5 0 0 1 10 0"/></svg></button><div class="profile-pill"><span class="mini-avatar" id="smallAvatar">C</span><span id="pillName">Пользователь</span></div><button class="wallet-tool" type="button" aria-label="Галерея" onclick="openScreen(\'profile\')"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="8.5" cy="9" r="1.5"/><path d="m21 15-5-5L5 19"/></svg></button><button class="wallet-tool" type="button" aria-label="Crypto Pay" onclick="openAccountSection(\'Crypto Pay\')"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M14.5 8.5c-.7-.6-1.6-.8-2.6-.8-1.6 0-2.8.8-2.8 2s1.1 1.8 2.8 2.1 2.8.8 2.8 2.1-1.2 2.3-2.9 2.3c-1.1 0-2.2-.4-2.9-1.1M12 6v12"/></svg></button></div>
 <div class="balance"><div class="balance-line"><div class="balance-num" id="balanceValue">$ 0</div><button class="balance-eye" id="balanceEye" onclick="toggleBalance()">◉</button></div><div class="balance-label">Общий баланс в <span class="blue">USD</span></div></div>
 <div class="actions">
 <button class="action" onclick="openScreen('send')"><span class="circle">↑</span>Отправить</button>
