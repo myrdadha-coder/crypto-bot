@@ -593,6 +593,87 @@ body{background:#000}
  #profile .setting{font-size:13px}
 }
 
+
+/* Visual pass 03 — detailed mobile layouts and controls */
+.screen{animation:screen-enter .18s ease-out}
+@keyframes screen-enter{from{opacity:.65;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+button{-webkit-tap-highlight-color:transparent}
+button:focus-visible,.setting:focus-visible{outline:2px solid #55b9ed;outline-offset:2px}
+#history .history-filters{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;padding:9px 0}
+#history .history-filter{min-width:0;padding:10px 8px;display:flex;align-items:center;justify-content:center;gap:5px;border-radius:12px;background:#202d39;border:1px solid #3a4b59;color:#c9d3dc;font-size:11px;white-space:nowrap}
+#history .history-empty{min-height:58vh}
+#history .history-document{width:88px;height:104px;opacity:.82}
+#market .trade-head{display:flex;justify-content:space-between;align-items:center;padding:12px 3px}
+#market .market-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:14px 3px}
+#market .market-stats>div{display:flex;flex-direction:column;gap:6px;line-height:1.3}
+#market .market-stats b{font-size:14px;color:#e9f0f5;font-weight:650}
+#market .trade-grid{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(112px,.92fr);align-items:start;gap:9px}
+#market .trade-tabs{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:9px;padding:4px;border-radius:12px;background:#1a2732}
+#market .trade-tabs button{min-width:0;padding:9px 2px;border:0;background:transparent;color:#a4b1bc;font-size:12px}
+#market .trade-tabs button.selected{background:#2d9fdf;color:white}
+#market .trade-box{min-width:0;margin:0 0 8px;padding:10px;border-radius:12px}
+#market .trade-box p{font-size:11px;color:#91a0ac;margin:8px 0 3px}
+#market .trade-box input{min-width:0;font-size:14px}
+#market .orderbook{min-width:0;padding:3px 0}
+#market .orderbook>p{font-size:10px;white-space:nowrap}
+#market .orderbook>div{display:flex;justify-content:space-between;gap:5px;padding:5px 1px;font-variant-numeric:tabular-nums}
+#market .orderbook h2{font-size:19px;margin:8px 0;color:#4ecb91}
+#market .trade-grid .primary{width:100%;padding:0 5px;font-size:12px}
+#market .filters{display:flex;gap:7px;margin:16px -2px 8px;padding-bottom:5px;overflow-x:auto}
+#market .filters .filter{flex:none;border:1px solid #3b4c5a;border-radius:18px;background:#202d39;color:#aab7c2;padding:9px 12px;font-size:11px}
+#market .filters .filter.active{background:#2d9fdf;color:white;border-color:#2d9fdf}
+#market .empty{background:#202d39;border-radius:17px;margin-top:8px;color:#94a2ad}
+#p2p .p2p-card{background:#202d39;border:1px solid #3b4b58;border-radius:16px;padding:14px;margin:10px 0}
+#p2p .p2p-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+#p2p .p2p-user{display:flex;align-items:center;gap:9px;min-width:0}
+#p2p .p2p-avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#344b60;color:#dff3ff;font-weight:700}
+#p2p .p2p-name{font-size:13px;font-weight:650;color:#edf3f7}
+#p2p .p2p-meta{font-size:10px;color:#92a1ad;margin-top:4px}
+#p2p .p2p-price{text-align:right;font-size:14px;font-weight:750;white-space:nowrap;color:#55b9ed}
+#p2p .p2p-price small{display:block;font-size:10px;color:#92a1ad;font-weight:400;margin-top:3px}
+#p2p .p2p-info{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px;padding:12px 0;margin-top:11px;border-top:1px solid #3a4a58;font-size:11px}
+#p2p .p2p-info span:nth-child(odd){color:#91a0ac}
+#p2p .p2p-info span:nth-child(even){text-align:right;color:#e0e8ee}
+#p2p .p2p-buy{width:100%;height:42px;border:0;border-radius:12px;background:#2d9fdf;color:#fff;font:inherit;font-size:13px;font-weight:700}
+#festival .festival-hero{padding:23px 20px;background:linear-gradient(145deg,#253b4b,#273a48 55%,#36424a);border:1px solid #435565}
+#festival .festival-hero h1{font-size:24px;line-height:1.15;margin:12px 0 8px}
+#festival .festival-hero p{font-size:13px;line-height:1.45;color:#c2ccd4;max-width:290px}
+#festival .festival-date{display:inline-flex;margin-top:12px;padding:7px 11px;border-radius:20px;background:#40576a;color:#eaf4fb;font-size:10px;font-weight:750;letter-spacing:.7px}
+#festival .festival-score{display:flex;align-items:center;justify-content:space-between;padding:16px;margin:14px 0;background:#202d39}
+#festival .festival-score strong{font-size:25px;color:#54b8ec}
+#festival .festival-task{display:flex;align-items:center;gap:12px;padding:14px;margin:8px 0;background:#202d39}
+#festival .festival-task>span{width:36px;height:36px;border-radius:11px;background:#2c4050;display:grid;place-items:center;color:#54b8ec}
+#festival .festival-task>div{min-width:0;flex:1}
+#festival .festival-task b{font-size:13px}
+#festival .festival-task small{display:block;margin-top:4px;font-size:11px;line-height:1.35;color:#94a2ad}
+#festival .festival-task i{font-style:normal;color:#94a2ad;font-size:20px}
+#festival .primary{width:100%;margin:14px 0}
+#qrpay .qr-camera-stage{min-height:390px;padding:20px 14px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;border:1px solid #394b59}
+#qrpay .qr-scan-frame{width:min(72vw,250px);height:min(72vw,250px);max-height:250px;position:relative;display:grid;place-items:center;border:1px solid #506575;border-radius:16px;background:linear-gradient(145deg,#263744,#192733)}
+#qrpay .scan-placeholder{font-size:62px;color:#607787;opacity:.65}
+#qrpay .camera-topline,#qrpay .camera-bottomline{font-size:12px;color:#a9b7c1;text-align:center}
+#qrpay .qr-camera-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#qrpay .qr-camera-actions button{min-height:48px;border:1px solid #3b4d5b;border-radius:13px;background:#202d39;color:#e3ebf1;font:inherit;font-size:12px}
+#profile .profile-card{background:linear-gradient(110deg,#243746,#202d39)}
+#profile .profile-card b{font-size:16px}
+#profile .profile-card .muted{font-size:12px;margin-top:4px}
+#profile .settings-group{background:#202d39;border:1px solid #394956}
+#profile .setting{display:flex;align-items:center;gap:11px;min-width:0}
+#profile .setting .arr{margin-left:auto}
+#profile .setting-icon{flex:none}
+#send .list-row{min-height:72px}
+#send .amount-field{font-size:18px;font-weight:600}
+#deposit-detail .address-text{overflow-wrap:anywhere;text-align:center;font-size:12px;color:#9cabb6;padding:10px 0}
+#withdraw-detail .helper{margin-bottom:10px}
+@media(max-width:360px){
+ #market .trade-grid{grid-template-columns:minmax(0,1fr) minmax(100px,.82fr);gap:7px}
+ #market .orderbook{font-size:10px}
+ #market .trade-box{padding:8px}
+ #market .trade-tabs button{font-size:11px}
+ #p2p .p2p-price{font-size:12px}
+ #history .history-filter{font-size:10px;padding-inline:5px}
+}
+
 </style>
 </head>
 <body>
