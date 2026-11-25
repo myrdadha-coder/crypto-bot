@@ -674,6 +674,57 @@ button:focus-visible,.setting:focus-visible{outline:2px solid #55b9ed;outline-of
  #history .history-filter{font-size:10px;padding-inline:5px}
 }
 
+
+/* Wallet refinement 04 — consistent hierarchy and compact Telegram-style spacing */
+#wallet .profile-pill{height:34px;min-height:34px;margin:8px auto 25px;padding:3px 12px;border-radius:18px;background:#202d39;border:1px solid #344653;color:#dce5ec;font-size:12px;font-weight:550}
+#wallet .mini-avatar{width:25px;height:25px;border-radius:50%;display:grid;place-items:center;background:#344b5d;color:#a9ddf7;font-size:12px;font-weight:750}
+#wallet .balance{margin:0 0 24px;text-align:center}
+#wallet .balance-line{gap:8px;min-height:44px}
+#wallet .balance-num{font-size:37px;line-height:1.08;font-weight:750;letter-spacing:-1.25px;color:#f1f5f8;font-variant-numeric:tabular-nums}
+#wallet .balance-eye{width:29px;height:29px;display:grid;place-items:center;background:#293b49;border:1px solid #3a4c5a;color:#aab9c5;font-size:15px}
+#wallet .balance-label{margin-top:6px;font-size:12px;line-height:17px;color:#91a1ae}
+#wallet .balance-label .blue{color:#55b9ed;font-weight:650}
+#wallet .actions{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin:0 0 22px}
+#wallet .action{min-width:0;gap:7px;padding:0 0 3px;color:#56b9eb;font-size:11px;font-weight:600;letter-spacing:-.1px}
+#wallet .action .circle{width:43px;height:43px;border-radius:50%;background:#293b49;border:1px solid #3b5060;color:#55b9ed;font-size:22px;box-shadow:none}
+#wallet .action .circle svg{width:19px;height:19px}
+#wallet .promo-carousel{margin:0 -16px 4px}
+#wallet .promo-track{gap:9px;padding:0 16px 2px}
+#wallet .promo-card{flex:0 0 calc(100% - 24px);min-height:96px;padding:13px 14px;border:1px solid #3a4b57;border-radius:15px;gap:11px;box-shadow:0 5px 16px #0002}
+#wallet .promo-autumn{background:linear-gradient(112deg,#344453,#394c5a)}
+#wallet .promo-p2p{background:linear-gradient(112deg,#263e50,#2c5264)}
+#wallet .promo-qr{background:linear-gradient(112deg,#24433f,#2b5a52)}
+#wallet .promo-swap{background:linear-gradient(112deg,#383650,#4a456b)}
+#wallet .promo-icon{width:42px;height:42px;border-radius:12px;background:#ffffff12;font-size:23px}
+#wallet .promo-copy{padding-right:4px}
+#wallet .promo-copy b{font-size:14px;line-height:18px;margin-bottom:4px;color:#f0f5f8}
+#wallet .promo-copy span{font-size:11px;line-height:1.35;color:#c2ced7}
+#wallet .promo-arrow{font-size:23px;color:#c9d7e0}
+#wallet .dots{margin:5px 0 17px;text-align:center;font-size:8px;line-height:10px;letter-spacing:5px;color:#607383}
+#wallet .dots i{color:#55b9ed}
+#wallet .section-title{display:flex;align-items:center;justify-content:space-between;margin:0 2px 10px;font-size:15px;font-weight:700;letter-spacing:-.2px;color:#edf3f7}
+#wallet .section-title .blue{color:#55b9ed}
+#wallet .asset-card{padding:2px 13px 0;border:1px solid #344653;border-radius:16px;background:#202d39;overflow:hidden}
+#wallet .asset-row{min-height:63px;gap:8px}
+#wallet .asset-left{gap:10px}
+#wallet .asset-left .coin{width:36px;height:36px;font-size:20px}
+#wallet .coin-name{font-size:13px;line-height:17px;font-weight:650;color:#e7eef3}
+#wallet .coin-price{margin-top:3px;font-size:11px;line-height:14px;color:#93a3af}
+#wallet .coin-price .down{color:#e17e86}
+#wallet .asset-right{flex:none;text-align:right;font-size:12px;line-height:16px;color:#e4edf3;font-variant-numeric:tabular-nums}
+#wallet .asset-right .asset-amount{font-weight:650}
+#wallet .asset-right .asset-currency{color:#aab8c2;font-size:10px}
+#wallet .asset-right small{display:block;margin-top:3px;font-size:10px;color:#899aa7}
+#wallet .asset-row:not(:last-child):after{left:46px;right:0;background:#354653}
+#wallet .show-more{justify-content:center;gap:8px;padding:13px 4px;color:#55b9ed;font-size:12px;font-weight:650}
+#wallet .show-more .hide-icon{width:auto;height:auto;background:transparent;color:#55b9ed;font-size:15px}
+@media(max-width:380px){
+ #wallet .balance-num{font-size:34px}
+ #wallet .action{font-size:10px}
+ #wallet .action .circle{width:40px;height:40px}
+ #wallet .promo-card{flex-basis:calc(100% - 20px)}
+ #wallet .asset-row{min-height:60px}
+}
 </style>
 </head>
 <body>
