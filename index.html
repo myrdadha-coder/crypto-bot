@@ -899,6 +899,13 @@ button:focus-visible,.setting:focus-visible{outline:2px solid #55b9ed;outline-of
 #history .history-empty{min-height:52vh;gap:22px}
 #wallet .show-more .hide-icon{width:30px;height:30px;border-radius:50%;background:#2d4153;color:#e1edf6;display:grid;place-items:center}
 #wallet .show-more .hide-icon svg{width:23px;height:23px;stroke-width:0;fill:#e1edf6}
+/* Crypto Bot reference pass: brand marks and native chevrons */
+.coin{overflow:hidden;padding:0}
+
+.list-row .arr{font-size:0!important;width:9px;height:9px;flex:none;border-top:1.7px solid #8b98a5;border-right:1.7px solid #8b98a5;transform:rotate(45deg);margin-right:4px}
+#history .history-filter b{font-size:0!important;width:7px;height:7px;border-right:1.5px solid #9aa8b5;border-bottom:1.5px solid #9aa8b5;transform:rotate(45deg);margin-top:-4px}
+#wallet .section-title .blue{display:inline-flex;align-items:center;gap:6px}
+#wallet .section-title .blue:after{content:'';width:7px;height:7px;border-top:1.6px solid currentColor;border-right:1.6px solid currentColor;transform:rotate(45deg)}
 </style>
 </head>
 <body>
@@ -1168,10 +1175,3 @@ if (targetScreen && document.getElementById(targetScreen)) {
 try{const tg=window.Telegram?.WebApp;tg?.ready();tg?.expand();const u=tg?.initDataUnsafe?.user;if(u?.photo_url){const avatar=document.getElementById('navAvatar');if(avatar)avatar.innerHTML='<img src="'+String(u.photo_url).replace(/[&<>\"']/g,'')+'" alt="">';}if(u){const name=[u.first_name,u.last_name].filter(Boolean).join(' ')||'Пользователь';const initial=(u.first_name||'C').slice(0,1).toUpperCase();document.getElementById('userName').textContent=name;document.getElementById('pillName').textContent=name;document.getElementById('userTag').textContent='@'+(u.username||'telegram');const p2pName=document.getElementById('p2pProfileName'),p2pAvatar=document.getElementById('p2pAvatar');if(p2pName)p2pName.textContent=name;if(p2pAvatar)p2pAvatar.textContent=initial;['smallAvatar','bigAvatar'].forEach(id=>document.getElementById(id).textContent=initial)}}catch(e){}
 </script>
 </body></html>
-/* Crypto Bot reference pass: brand marks and native chevrons */
-.coin{overflow:hidden;padding:0}
-
-.list-row .arr{font-size:0!important;width:9px;height:9px;flex:none;border-top:1.7px solid #8b98a5;border-right:1.7px solid #8b98a5;transform:rotate(45deg);margin-right:4px}
-#history .history-filter b{font-size:0!important;width:7px;height:7px;border-right:1.5px solid #9aa8b5;border-bottom:1.5px solid #9aa8b5;transform:rotate(45deg);margin-top:-4px}
-#wallet .section-title .blue{display:inline-flex;align-items:center;gap:6px}
-#wallet .section-title .blue:after{content:'';width:7px;height:7px;border-top:1.6px solid currentColor;border-right:1.6px solid currentColor;transform:rotate(45deg)}
