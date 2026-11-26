@@ -1029,13 +1029,7 @@ function listCoins(mode){return coins.map(c=>'<button type="button" class="list-
 document.getElementById('depositList').innerHTML=listCoins('deposit');document.getElementById('withdrawList').innerHTML=listCoins('withdraw');
 document.getElementById('sendAssetList').innerHTML=listCoins('send');
 const networkChoices=[['TRC20','Tron','TRON (TRC20)'],['BEP20','BNB Smart Chain','BNB Smart Chain (BEP20)'],['TON','TON','TON'],['SOL','Solana','Solana (SPL)'],['ERC20','Ethereum','Ethereum (ERC20)']];
-function networkRows(mode){const icons={
-TRC20:'<svg viewBox="0 0 40 40"><path fill="#ef0027" d="M4 7 36 14 20 36 4 7Z"/><path d="m4 7 16 29 16-22M4 7l32 7" fill="none" stroke="#fff" stroke-width="1.8"/></svg>',
-BEP20:'<svg viewBox="0 0 40 40"><g fill="#f3ba2f"><path d="m20 3 6 6-6 6-6-6zM9 14l6 6-6 6-6-6zm22 0 6 6-6 6-6-6zM20 25l6 6-6 6-6-6z"/><path d="m20 14 6 6-6 6-6-6z"/></g></svg>',
-TON:'<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="19" fill="#0098ea"/><path d="M10 11h20L20 31 10 11Zm5 4 5 11 5-11H15Z" fill="#fff"/></svg>',
-SOL:'<svg viewBox="0 0 40 40"><defs><linearGradient id="solIcon" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#14f195"/><stop offset="1" stop-color="#9945ff"/></linearGradient></defs><path fill="url(#solIcon)" d="M10 8h23l-4 6H5zm-4 9h28l-4 6H2zm4 9h23l-4 6H5z"/></svg>',
-ERC20:'<svg viewBox="0 0 40 40"><path fill="#8b92b2" d="m20 3 11 17-11 6L9 20 20 3Zm0 17 11 3-11 14L9 23l11-3Z"/></svg>'
-};return networkChoices.map(n=>'<button type="button" class="list-row coin-choice network-choice" onclick="'+(mode==='deposit'?'setDepositNetwork':'setWithdrawNetwork')+'(\''+n[0]+'\')"><span class="network-icon">'+icons[n[0]]+'</span><span class="details"><b>'+n[1]+'</b><small>'+n[2]+'</small></span><span class="arr">›</span></button>').join('')}
+function networkRows(mode){return networkChoices.map(n=>'<button type="button" class="list-row coin-choice network-choice" onclick="'+(mode==='deposit'?'setDepositNetwork':'setWithdrawNetwork')+'(\\''+n[0]+'\\')"><span class="network-icon">'+n[0]+'</span><span class="details"><b>'+n[1]+'</b><small>'+n[2]+'</small></span><span class="arr">›</span></button>').join('')}
 function openHistoryFilter(type){const choices=type==='Тип операции'?['Все операции','Пополнения','Выводы','Переводы','Обмены']:type==='Монета'?['Все монеты','USDT','BTC','TON','ETH','BNB','SOL']:['За всё время','Сегодня','7 дней','30 дней','90 дней'];showModal(type,choices.map(x=>'<button class="secondary-action history-option" onclick="selectHistoryFilter(\''+type+'\',\''+x+'\')">'+x+'</button>').join(''));}
 function selectHistoryFilter(type,value){const btn=[...document.querySelectorAll('.history-filter')].find(x=>x.textContent.includes(type));if(btn){const span=btn.querySelector('span');if(span)span.textContent=value;}closeModal();}
 let previous='wallet';
