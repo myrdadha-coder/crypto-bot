@@ -775,18 +775,8 @@ button:focus-visible,.setting:focus-visible{outline:2px solid #55b9ed;outline-of
 #wallet .asset-card{margin-bottom:14px}
 @media(prefers-reduced-motion:reduce){#wallet .promo-dot{transition:none}}
 
-/* Bottom navigation — match IMG_7455 floating capsule */
-.bottom-nav{position:fixed;z-index:30;left:50%;right:auto;transform:translateX(-50%);bottom:calc(13px + env(safe-area-inset-bottom));width:min(316px,calc(100% - 78px));height:60px;min-height:60px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px;padding:5px 6px;border:1px solid rgba(119,143,166,.25);border-radius:36px;background:rgba(48,65,83,.94);box-shadow:0 7px 24px rgba(0,0,0,.28);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
-.bottom-nav .navbtn{min-width:0;min-height:0;padding:4px 1px;border:0;border-radius:28px;background:transparent;color:#e1e8ef;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10px;font-weight:500;line-height:1.1;white-space:nowrap}
-.bottom-nav .navbtn.active{background:#40566d;color:#36a9e8}
-.bottom-nav .navico,.bottom-nav .navico svg{width:22px;height:22px;display:block;flex:none}
-.bottom-nav .navico svg{fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
-.bottom-nav .nav-avatar{width:23px;height:23px;border-radius:50%;overflow:hidden;background:#536579}
-.bottom-nav .nav-avatar img{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%}
-.shell{padding-bottom:104px}
-@media(max-width:360px){.bottom-nav{width:calc(100% - 54px);height:56px;min-height:56px}.bottom-nav .navbtn{font-size:9px}.bottom-nav .navico,.bottom-nav .navico svg{width:20px;height:20px}}
-
-.bottom-nav.is-hidden{display:none!important}\n/* Bottom navigation: isolated floating capsule, matched to IMG_7455 */
+/* Bottom navigation — one source of truth, sized to IMG_7455 */
+.shell{padding-bottom:108px}
 .bottom-nav{
   position:fixed!important;
   z-index:100!important;
@@ -795,9 +785,9 @@ button:focus-visible,.setting:focus-visible{outline:2px solid #55b9ed;outline-of
   top:auto!important;
   bottom:calc(13px + env(safe-area-inset-bottom))!important;
   transform:translateX(-50%)!important;
-  width:min(316px,calc(100vw - 54px))!important;
-  height:60px!important;
-  min-height:60px!important;
+  width:min(332px,calc(100vw - 54px))!important;
+  height:64px!important;
+  min-height:64px!important;
   max-width:calc(100vw - 54px)!important;
   box-sizing:border-box!important;
   display:grid!important;
@@ -811,6 +801,7 @@ button:focus-visible,.setting:focus-visible{outline:2px solid #55b9ed;outline-of
   backdrop-filter:blur(18px)!important;
   -webkit-backdrop-filter:blur(18px)!important;
 }
+.bottom-nav.is-hidden{display:none!important}
 .bottom-nav .navbtn{
   display:flex!important;
   min-width:0!important;
@@ -828,20 +819,20 @@ button:focus-visible,.setting:focus-visible{outline:2px solid #55b9ed;outline-of
   justify-content:center!important;
   gap:3px!important;
   font-family:inherit!important;
-  font-size:10px!important;
+  font-size:11px!important;
   font-weight:500!important;
   line-height:1.1!important;
   white-space:nowrap!important;
 }
 .bottom-nav .navbtn.active{background:#40566d!important;color:#36a9e8!important}
-.bottom-nav .navico,.bottom-nav .navico svg{width:22px!important;height:22px!important;display:block!important;flex:none!important}
+.bottom-nav .navico,.bottom-nav .navico svg{width:24px!important;height:24px!important;display:block!important;flex:none!important}
 .bottom-nav .navico svg{fill:none!important;stroke:currentColor!important;stroke-width:2.2!important;stroke-linecap:round!important;stroke-linejoin:round!important}
-.bottom-nav .nav-avatar{width:23px!important;height:23px!important;border-radius:50%!important;overflow:hidden!important;background:#536579!important}
+.bottom-nav .nav-avatar{width:24px!important;height:24px!important;border-radius:50%!important;overflow:hidden!important;background:#536579!important}
 .bottom-nav .nav-avatar img{width:100%!important;height:100%!important;object-fit:cover!important;display:block!important;border-radius:50%!important}
 @media(max-width:360px){
- .bottom-nav{width:calc(100vw - 54px)!important;height:56px!important;min-height:56px!important}
- .bottom-nav .navbtn{font-size:9px!important}
- .bottom-nav .navico,.bottom-nav .navico svg{width:20px!important;height:20px!important}
+  .bottom-nav{width:calc(100vw - 54px)!important;height:58px!important;min-height:58px!important}
+  .bottom-nav .navbtn{font-size:9px!important}
+  .bottom-nav .navico,.bottom-nav .navico svg{width:21px!important;height:21px!important}
 }
 </style>
 </head>
