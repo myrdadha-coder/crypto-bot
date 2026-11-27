@@ -93,7 +93,7 @@ async function refreshMarketPrices(){
   });
   swapRates.USDT=data.tether?.usd||1;swapRates.BTC=data.bitcoin?.usd||0;swapRates.ETH=data.ethereum?.usd||0;swapRates.SOL=data.solana?.usd||0;
   marketUpdatedAt=Date.now();
-  if(document.getElementById("walletAssets")){renderAssets(window.walletExpanded||false);refreshWalletAssetBalances();}
+  if(document.getElementById("walletAssets")){renderWalletAssets();refreshWalletAssetBalances();}
   const stamp=document.getElementById("marketUpdatedAt");if(stamp)stamp.textContent="Курс обновлён: "+new Date(marketUpdatedAt).toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit"});
  }catch(e){console.warn("Не удалось обновить рыночные курсы:",e.message);}
 }
@@ -918,7 +918,7 @@ button:focus-visible,.setting:focus-visible{outline:2px solid #55b9ed;outline-of
 <button class="action" onclick="openScreen('history')"><span class="circle"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="16" rx="3"/><path d="M7.5 3v4M16.5 3v4M3.5 10h17"/></svg></span>История</button>
 </div>
 <div class="promo-carousel"><div class="promo-track" id="promoTrack"><button class="promo-card promo-autumn" onclick="openPromo('festival')"><span class="promo-icon">🌱</span><span class="promo-copy"><b>Осенний фестиваль</b><span>Криптовалютные подарки всем активным пользователям!</span></span><span class="promo-arrow">›</span></button><button class="promo-card promo-p2p" onclick="openPromo('p2p')"><span class="promo-icon">💠</span><span class="promo-copy"><b>P2P Маркет</b><span>Покупайте и продавайте криптовалюту напрямую у других пользователей.</span></span><span class="promo-arrow">›</span></button><button class="promo-card promo-qr" onclick="openPromo('qr')"><span class="promo-icon">▦</span><span class="promo-copy"><b>Оплата по QR-коду</b><span>Оплачивайте покупки в магазинах РФ с помощью USDT.</span></span><span class="promo-arrow">›</span></button><button class="promo-card promo-swap" onclick="openPromo('swap')"><span class="promo-icon">⇄</span><span class="promo-copy"><b>Быстрые обмены</b><span>Обменивайте одну криптовалюту на другую по рыночной цене.</span></span><span class="promo-arrow">›</span></button></div></div><div class="dots" id="promoDots" aria-label="Слайды баннеров"><button class="promo-dot active" type="button" aria-label="Баннер 1" aria-current="true" onclick="goPromoSlide(0)"></button><button class="promo-dot" type="button" aria-label="Баннер 2" onclick="goPromoSlide(1)"></button><button class="promo-dot" type="button" aria-label="Баннер 3" onclick="goPromoSlide(2)"></button><button class="promo-dot" type="button" aria-label="Баннер 4" onclick="goPromoSlide(3)"></button></div>
-<div class="section-title"><span class="blue">Мои активы ›</span></div><div class="asset-card" id="walletAssets"></div>
+<div class="section-title" role="button" tabindex="0" onclick="toggleWalletAssets()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleWalletAssets()}"><span class="blue">Мои активы ›</span></div><div class="asset-card" id="walletAssets"></div>
 </section>
 <section class="screen" id="send"><div class="page-title">Перевод контакту</div><div class="list-card"><div class="list-row" onclick="chooseDemoRecipient()"><div class="coin" style="background:#299fe8">➤</div><div class="details"><b id="sendRecipientName">Новому получателю</b><small>Сообщением в Telegram</small></div><span class="arr">›</span></div><div class="list-row" onclick="chooseSendAsset()"><div class="coin usdt">₮</div><div class="details"><b id="sendAssetName">Tether</b><small class="blue">Изменить монету ›</small></div><div style="margin-left:auto;text-align:right" id="sendAssetBalance">0 USDT</div></div></div><input class="amount-field" id="sendAmount" type="number" min="0" step="any" placeholder="Сумма"><div class="helper">Доступно: <b id="sendAvailable">0 USDT</b> · <span class="blue" onclick="openScreen('deposit')">Пополнить ›</span></div><button class="primary" onclick="reviewDemoSend()">Продолжить</button><div class="helper"></div></section>
 <section class="screen" id="send-assets"><div class="page-title">Выберите монету</div><div class="list-card" id="sendAssetList"></div></section>
@@ -991,8 +991,9 @@ function selectSwapAsset(side,symbol){
 }
 function swapDirection(){const old=swapFrom;swapFrom=swapTo;swapTo=old;renderSwapAssets();}
 let walletAssetsExpanded=false;
+let balanceVisible=true;
 function renderWalletAssets(){const root=document.getElementById('walletAssets');if(!root)return;root.innerHTML=coins.slice(0,walletAssetsExpanded?coins.length:7).map(c=>coinRow(c)).join('')+'<button class="show-more" type="button" onclick="toggleWalletAssets()"><span class="hide-icon">'+(walletAssetsExpanded?'<svg viewBox="0 0 24 24"><path d="m6 14 6-6 6 6"/></svg>':'<svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>')+'</span>'+(walletAssetsExpanded?'Скрыть':'Показать больше')+'</button>';refreshWalletAssetBalances();}
-function toggleWalletAssets(){walletAssetsExpanded=!walletAssetsExpanded;renderWalletAssets();
+function toggleWalletAssets(){walletAssetsExpanded=!walletAssetsExpanded;renderWalletAssets();}
 function goPromoSlide(index){
  const track=document.getElementById("promoTrack");
  const cards=track?.querySelectorAll(".promo-card");
@@ -1025,7 +1026,7 @@ function syncPromoDots(){
  syncPromoDots();
 })();
 
-renderSwapAssets();}
+renderSwapAssets();
 function walletUsdRate(coin){const value=Number(String(coin?.[3]||"").replace(/[^0-9.]/g,""));return Number.isFinite(value)?value:0;}
 function walletTotalUsd(){return coins.reduce((sum,coin)=>sum+(Number(demoBalances[coin[2]]||0)*walletUsdRate(coin)),0);}
 function refreshWalletAssetBalances(){
@@ -1069,7 +1070,6 @@ function selectHistoryFilter(index,value){
 }
 document.querySelectorAll('.pair').forEach(b=>b.addEventListener('click',()=>{}));
 
-let balanceVisible=true;
 function applyBalanceVisibility(){
  const el=document.getElementById("balanceValue"),eye=document.getElementById("balanceEye"),wallet=document.getElementById("walletAssets");
  if(el){el.textContent=balanceVisible?"$ "+money(walletTotalUsd()):"••••••";el.classList.toggle("balance-hidden",!balanceVisible);}
@@ -1080,7 +1080,7 @@ function toggleBalance(){balanceVisible=!balanceVisible;applyBalanceVisibility()
 let sendAsset="USDT",depositAsset="USDT",depositNetwork="BEP20",withdrawAsset="USDT",withdrawNetwork="TRC20";
 function chooseDemoRecipient(){showModal("Получатель","Выберите контакт.",'<button class="secondary-action" onclick="document.getElementById(\'sendRecipientName\').textContent=\'Контакт Telegram\';closeModal()">Контакт Telegram</button>');}
 function chooseSendAsset(){document.getElementById("sendAssetList").innerHTML=listCoins("send");openScreen("send-assets");}
-function setSendAsset(asset){sendAsset=asset;document.getElementById("sendAssetName").textContent=coins.find(x=>x[2]===asset)?.[1]||asset;document.getElementById("sendAssetBalance").textContent=money(demoBalances[asset]||0)+" "+asset;document.getElementById("sendAvailable").textContent=money(demoBalances[asset]||0)+" "+asset;openScreen("send");}
+function setSendAsset(asset){sendAsset=asset;const selected=coins.find(x=>x[2]===asset);document.getElementById("sendAssetName").textContent=selected?.[1]||asset;const icon=document.querySelector("#send .list-row:nth-child(2) .coin");if(icon&&selected){icon.className="coin "+selected[6];icon.textContent=selected[0];}document.getElementById("sendAssetBalance").textContent=money(demoBalances[asset]||0)+" "+asset;document.getElementById("sendAvailable").textContent=money(demoBalances[asset]||0)+" "+asset;openScreen("send");}
 function reviewDemoSend(){const amount=Number(document.getElementById("sendAmount")?.value||0);if(!amount||amount<=0){notice("Укажи сумму перевода");return;}showModal("Перевод недоступен","Отправка переводов не подключена. Средства не списаны.");}
 function networkTitle(network){return ({TRC20:"Tron (TRC20)",BEP20:"BNB Smart Chain (BEP20)",TON:"TON",SOL:"Solana (SPL)",ERC20:"Ethereum (ERC20)"})[network]||network;}
 function openDemoDeposit(asset){depositAsset=asset;document.getElementById("depositNetworkAsset").textContent=asset;document.getElementById("depositNetworkList").innerHTML=networkRows("deposit");openScreen("deposit-networks");}
@@ -1146,8 +1146,7 @@ document.querySelectorAll('#depositList .list-row').forEach((row,i)=>row.addEven
 document.querySelectorAll('#withdrawList .list-row').forEach((row,i)=>row.addEventListener('click',()=>openDemoWithdraw(coins[i][2])));
 window.openPromo=function(kind){const info={festival:['Осенний фестиваль','Официальный фестиваль Crypto Bot: баллы начисляются за активность в P2P Маркете, на Бирже и в Обменах. Баллы работают как кэшбэк — возвращают часть комиссии за использование сервиса. Фестиваль заявлен до 30 ноября.'],p2p:['P2P Маркет','Площадка для покупки и продажи криптовалюты напрямую между пользователями. В официальном сервисе сделки защищаются механизмом блокировки криптовалюты (эскроу).'],qr:['Оплата по QR-коду','Сканирование QR-кода и просмотр счёта.'],swap:['Быстрые обмены','Официальная функция Обмен позволяет мгновенно обменять одну монету на другую по рыночной цене. ']}[kind];if(kind==='p2p'){openScreen('p2p');return;}if(kind==='swap'){openScreen('exchange');return;}if(kind==='festival'){openScreen('festival');return;}if(kind==='qr'){openScreen('qrpay');return;}showModal(info[0],info[1]);};const promoTrack=document.getElementById('promoTrack'),promoDots=document.getElementById('promoDots');if(promoTrack&&promoDots){promoTrack.addEventListener('scroll',()=>{const index=Math.min(3,Math.max(0,Math.round(promoTrack.scrollLeft/(promoTrack.clientWidth-12))));promoDots.innerHTML=Array.from({length:4},(_,i)=>i===index?'<i>●</i>':'●').join(' ');},{passive:true});}
 document.querySelector('.profile-pill').addEventListener('click',()=>openScreen('profile'));
-function renderAssets(expanded=false){window.walletExpanded=expanded;document.getElementById('walletAssets').innerHTML=(expanded?coins:coins.slice(0,7)).map(c=>coinRow(c)).join('')+'<div class="show-more" id="toggleAssets"><span class="hide-icon">'+(expanded?'⌃':'⌄')+'</span>'+(expanded?'Показать меньше':'Показать больше')+'</div>';document.getElementById('toggleAssets').addEventListener('click',()=>renderAssets(!expanded))}
-renderAssets();
+
 const requestedScreen = new URLSearchParams(location.search).get('screen');
 const screenAliases = {
  "p2p-buy":"p2p","p2p-sell":"p2p","p2p-deals":"p2p","p2p-create":"p2p","p2p-payment":"p2p",
