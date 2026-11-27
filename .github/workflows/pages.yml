@@ -85,7 +85,10 @@ jobs:
           if (!html.includes('USDC:["ERC20","BEP20"]')) throw new Error('USDC network list differs from Crypto Bot support docs');
           if (worker.includes('"DOGE"') || worker.includes('"TON"')) throw new Error('Delisted or renamed currency remains in demo database catalog');
           if (!worker.includes('["Tether Gold","XAUT"]')) throw new Error('XAUT missing from worker wallet summary');
-          if (!html.includes('grid-template-columns:repeat(4,1fr)') || !html.includes('>Трейд</button>') || !html.includes('>Ещё</button>')) throw new Error('Bottom navigation does not match the official four-tab layout');
+          const navTabs = ['wallet','market','exchange','p2p','profile'];
+          for (const tab of navTabs) if (!html.includes('data-screen="' + tab + '"')) throw new Error('Bottom navigation is missing tab: ' + tab);
+          for (const label of ['Кошелек','Биржа','Обмен','P2P','Аккаунт']) if (!html.includes('>' + label + '</button>')) throw new Error('Bottom navigation label is missing: ' + label);
+          if (!html.includes('grid-template-columns:repeat(5,minmax(0,1fr))')) throw new Error('Bottom navigation must have five equal tabs');
           if (!html.includes('onclick="openScreen(\'p2p\')"') || !html.includes('onclick="openScreen(\'history\')"')) throw new Error('More menu is missing P2P or transaction history shortcuts');
           if (!html.includes('function walletUsdRate(coin){const raw=') || !html.includes('value===null?"$ —"')) throw new Error('Unknown market prices must not be presented as zero valuation');
           console.log('Passed: Worker syntax, inline JS syntax, mirrored HTML, swap, wallet network icons, promo routes, asset balances, history, P2P safety and currency validation.');
