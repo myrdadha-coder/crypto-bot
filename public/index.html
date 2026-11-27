@@ -142,7 +142,7 @@ function calculateSwap(){
  const amount=Number(input?.value),fromRate=Number(swapRates[swapFrom]),toRate=Number(swapRates[swapTo]);
  if(result){
   if(!input?.value||!Number.isFinite(amount)||amount<=0)result.textContent="0";
-  else if(!Number.isFinite(fromRate)||fromRate<=0||!Number.isFinite(toRate)||toRate<=0)result.textContent="—";
+  else if(!Number.isFinite(fromRate)||fromRate<=0||!Number.isFinite(toRate)||toRate<=0)result.textContent="Курс недоступен";
   else result.textContent=money(amount*fromRate/toRate);
  }
  const balance=document.getElementById("exchangeBalance");if(balance)balance.textContent=money(demoBalances[swapFrom]||0);
