@@ -988,58 +988,58 @@ button:focus-visible,.setting:focus-visible{outline:2px solid #55b9ed;outline-of
 .deposit-card .primary{margin-top:16px;height:52px;font-size:15px;font-weight:700;letter-spacing:.1px;background:#319bd4;}
 .more-menu-action{width:100%;border:0;text-align:left;background:transparent;color:inherit;font:inherit;cursor:pointer;padding:0;}
 
-/* Deposit address screen — reference layout */
-.deposit-detail-screen{padding-top:2px!important}
-.deposit-hero{height:390px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;margin:0 -15px 20px}
-.deposit-network-chip{position:absolute;top:8px;right:4px;z-index:2;display:flex;align-items:center;gap:7px;padding:8px 11px;border-radius:22px;background:#293642;color:#aab5bf;font-size:12px}
-.deposit-network-chip .network-icon{width:20px;height:20px}
-.deposit-network-chip i{font-style:normal;font-size:18px}
-.deposit-pattern{position:absolute;inset:30px 0 0;pointer-events:none}
-.deposit-pattern span{position:absolute;color:#1c394b;font-size:28px;font-weight:800;opacity:.72}
-.deposit-pattern span:nth-child(1){left:18%;top:12%}.deposit-pattern span:nth-child(2){left:75%;top:12%}.deposit-pattern span:nth-child(3){left:9%;top:35%}.deposit-pattern span:nth-child(4){right:8%;top:35%}.deposit-pattern span:nth-child(5){left:18%;top:65%}.deposit-pattern span:nth-child(6){right:17%;top:65%}.deposit-pattern span:nth-child(7){left:31%;top:84%}.deposit-pattern span:nth-child(8){right:31%;top:84%}
-.deposit-hero .demo-qr-wrap{width:250px;height:250px;margin:0;padding:9px;border-radius:27px;z-index:1;box-shadow:none}
+
+/* Reference-matched deposit and swap screens */
+.deposit-detail-screen{padding-top:0!important}
+.deposit-hero{height:220px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;margin:0 -15px 20px}
+.deposit-settings{position:absolute;top:12px;right:15px;z-index:2;width:32px;height:32px;border:1px solid #45515e;border-radius:50%;background:#344150;color:#aab4bf;display:grid;place-items:center;padding:6px}
+.deposit-settings svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.deposit-pattern{position:absolute;inset:0;pointer-events:none}
+.deposit-pattern span{position:absolute;width:18px;height:18px;display:grid;place-items:center;color:#1c394b;font-size:16px;font-weight:800;opacity:.8}
+.deposit-pattern span:nth-child(1){left:22%;top:24%}.deposit-pattern span:nth-child(2){left:75%;top:24%}.deposit-pattern span:nth-child(3){left:14%;top:43%}.deposit-pattern span:nth-child(4){right:14%;top:43%}.deposit-pattern span:nth-child(5){left:22%;top:62%}.deposit-pattern span:nth-child(6){right:22%;top:62%}.deposit-pattern span:nth-child(7){left:14%;top:79%}.deposit-pattern span:nth-child(8){right:14%;top:79%}
+.deposit-hero .demo-qr-wrap{width:155px;height:155px;margin:0;padding:0;border-radius:20px;z-index:1;box-shadow:none;background:#fff}
 .deposit-hero .fake-qr{border-radius:18px!important}
-.deposit-address-title{display:flex;align-items:center;justify-content:space-between;margin:0 0 12px;font-size:15px}
+.deposit-address-title{display:flex;align-items:center;justify-content:space-between;margin:0 0 12px;font-size:15px;line-height:20px}
+.deposit-address-title b{font-weight:500}
 .deposit-address-title span{color:var(--muted);font-size:14px}
 .deposit-address-card{background:var(--panel);border-radius:22px;overflow:hidden}
-.deposit-address-main{min-height:84px;display:flex;align-items:center;gap:12px;padding:14px 14px}
-.deposit-token-icon{width:48px;height:48px;flex:none;border-radius:50%;display:grid;place-items:center;background:#009f9b;color:#fff;font-size:27px;position:relative}
-.deposit-token-icon small{position:absolute;right:-2px;bottom:-2px;width:19px;height:19px;border-radius:50%;background:#f4b51d;border:2px solid var(--panel);font-size:10px;display:grid;place-items:center}
-.deposit-address-main .address-text{flex:1;min-width:0;text-align:left!important;font-family:inherit!important;font-size:14px!important;line-height:1.5!important;letter-spacing:0!important;overflow-wrap:anywhere;padding:0!important;margin:0!important}
-.address-copy{flex:none;border:0;background:transparent;color:#929ca7;font-size:26px;padding:8px}
-.deposit-minimum{border-top:1px solid var(--line);padding:11px 14px;color:var(--muted);font-size:13px;font-weight:550}
-.deposit-guidance{margin:14px 14px 0;color:#9aa4ae;font-size:14px;line-height:1.5}
+.deposit-address-main{min-height:66px;display:flex;align-items:center;gap:12px;padding:12px 12px}
+.deposit-token-icon{width:39px;height:39px;flex:none;border-radius:50%;display:grid;place-items:center;background:#009f9b;color:#fff;font-size:23px;position:relative}
+.deposit-token-icon small{position:absolute;right:-2px;bottom:-2px;width:17px;height:17px;border-radius:50%;background:#f4b51d;border:2px solid var(--panel);font-size:9px;display:grid;place-items:center}
+.deposit-address-main .address-text{flex:1;min-width:0;text-align:left!important;font-family:inherit!important;font-size:14px!important;line-height:1.5!important;letter-spacing:0!important;overflow-wrap:anywhere;padding:0!important;margin:0!important;background:transparent!important;border:0!important}
+.address-copy{flex:none;border:0;background:transparent;color:#929ca7;font-size:23px;padding:5px}
+.deposit-minimum{border-top:1px solid var(--line);padding:9px 12px;color:var(--muted);font-size:12px;font-weight:550}
+.deposit-guidance{margin:10px 12px 0;color:#9aa4ae;font-size:13px;line-height:1.45}
 .deposit-guidance b{color:#d7e0e7;font-weight:600}
-.deposit-guidance-secondary{margin-top:13px}
+.deposit-guidance-secondary{margin-top:8px}
 .deposit-guidance a{color:var(--blue)}
-.deposit-menu{margin-top:38px;background:var(--panel);border-radius:22px;padding:0 14px}
-.deposit-menu-row{width:100%;min-height:76px;display:flex;align-items:center;gap:12px;padding:10px 4px;border:0;background:transparent;color:var(--text);font:inherit;text-align:left;position:relative}
-.deposit-menu-row:not(:last-child):after{content:"";position:absolute;left:58px;right:0;bottom:0;height:1px;background:var(--line)}
-.deposit-menu-row b{font-size:15px;font-weight:500}
-.deposit-menu-row i{margin-left:auto;color:var(--muted);font-style:normal;font-size:23px}
-.deposit-menu-icon{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;flex:none;background:linear-gradient(145deg,#5bc2ed,#258bc9);color:white;font-size:25px;font-weight:600}
-.deposit-detail-screen .deposit-network-chip{cursor:pointer}
-/* Swap screen — reference layout */
-.exchange-screen{padding-top:45px!important}
-.exchange-screen .swap-caption{font-size:15px;margin-bottom:12px}
-.exchange-screen .swap-wallet{gap:7px;font-size:14px}
-.exchange-screen .swap-wallet-icon{width:18px;height:18px}
-.swap-main-row{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:62px;margin-bottom:70px}
-.swap-main-row .swap-asset{width:auto;flex:0 0 auto;height:48px;gap:10px;margin:0}
-.swap-main-row .swap-asset .coin{width:36px;height:36px;min-width:36px;font-size:17px}
-.swap-main-row .swap-asset strong{font-size:27px;line-height:38px}
-.swap-main-row .swap-asset strong i{font-size:30px}
-.swap-amount-input{width:45%;min-width:0;border:0;outline:0;background:transparent;color:var(--text);font:inherit;font-size:32px;font-weight:700;text-align:right;padding:0}
+.deposit-menu{margin-top:22px;background:var(--panel);border-radius:22px;padding:0 12px}
+.deposit-menu-row{width:100%;min-height:50px;display:flex;align-items:center;gap:12px;padding:8px 0;border:0;background:transparent;color:var(--text);font:inherit;text-align:left;position:relative}
+.deposit-menu-row:not(:last-child):after{content:"";position:absolute;left:42px;right:0;bottom:0;height:1px;background:var(--line)}
+.deposit-menu-row b{font-size:14px;font-weight:500}
+.deposit-menu-row i{margin-left:auto;color:var(--muted);font-style:normal;font-size:22px}
+.deposit-menu-icon{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;flex:none;background:linear-gradient(145deg,#5bc2ed,#258bc9);color:white;font-size:19px;font-weight:600}
+.deposit-detail-screen .deposit-settings{cursor:pointer}
+/* Swap: match the reference's vertical rhythm and single-line amount rows */
+.exchange-screen{padding-top:34px!important}
+.exchange-screen .swap-caption{font-size:15px;line-height:20px;margin:0 0 8px}
+.exchange-screen .swap-wallet{gap:6px;font-size:14px}
+.exchange-screen .swap-wallet-icon{width:16px;height:16px}
+.swap-main-row{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:48px;margin-bottom:20px}
+.swap-main-row .swap-asset{width:auto;flex:0 0 auto;height:44px;gap:8px;margin:0}
+.swap-main-row .swap-asset .coin{width:24px;height:24px;min-width:24px;font-size:13px}
+.swap-main-row .swap-asset strong{font-size:25px;line-height:34px}
+.swap-main-row .swap-asset strong i{font-size:29px}
+.swap-amount-input{width:44%;min-width:0;border:0;outline:0;background:transparent;color:var(--text);font:inherit;font-size:31px;font-weight:700;text-align:right;padding:0}
 .swap-amount-input::placeholder{color:#8a929d;opacity:1}
-.swap-divider{margin:0 0 34px;gap:10px}
-.swap-divider button{width:38px;height:38px;min-width:38px}
-.swap-divider button svg{width:21px;height:21px}
-.exchange-screen .swap-receive-caption{margin:0 0 8px}
-.swap-output-row{margin-bottom:70px}
-.swap-output{margin-left:auto;color:#8a929d;font-size:32px;line-height:40px;font-weight:700;text-align:right}
-.swap-continue{height:58px;border-radius:34px;margin-top:0;font-size:17px;font-weight:650}
-@media(max-width:390px){.deposit-hero{height:350px}.deposit-hero .demo-qr-wrap{width:224px;height:224px}.exchange-screen{padding-top:34px!important}.swap-main-row{margin-bottom:52px}}
-
+.swap-divider{margin:0 0 10px;gap:8px}
+.swap-divider button{width:31px;height:31px;min-width:31px}
+.swap-divider button svg{width:19px;height:19px}
+.exchange-screen .swap-receive-caption{margin:0 0 12px}
+.swap-output-row{margin-bottom:31px}
+.swap-output{margin-left:auto;color:#8a929d;font-size:31px;line-height:38px;font-weight:700;text-align:right}
+.swap-continue{height:47px;border-radius:34px;margin-top:0;font-size:15px;font-weight:650}
+@media(max-width:390px){.deposit-hero{height:210px}.deposit-hero .demo-qr-wrap{width:148px;height:148px}.exchange-screen{padding-top:30px!important}.swap-main-row{margin-bottom:18px}}
 </style>
 </head>
 <body>
@@ -1063,11 +1063,11 @@ button:focus-visible,.setting:focus-visible{outline:2px solid #55b9ed;outline-of
 <section class="screen" id="deposit"><div class="page-title">Пополнение криптовалюты</div><div class="list-card" id="depositList"></div><div class="helper">Выберите актив и сеть, чтобы увидеть адрес и QR-код для пополнения.</div></section><section class="screen" id="deposit-networks"><div class="page-title">Пополнение · <span id="depositNetworkAsset">USDT</span></div><div class="list-card" id="depositNetworkList"></div></section>
 <section class="screen deposit-detail-screen" id="deposit-detail">
  <div class="deposit-hero">
-  <div class="deposit-network-chip" onclick="chooseDepositNetwork()"><span class="network-icon" id="depositNetworkIcon"></span><span id="depositNetworkLabel">BNB Smart Chain (BEP20)</span><i>⌄</i></div>
+  <button type="button" class="deposit-settings" onclick="chooseDepositNetwork()" aria-label="Выбрать сеть"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6Z"/><path d="m19.4 13.5 1.1.8-1.1 1.9-1.3-.5a7.7 7.7 0 0 1-1.6.9l-.2 1.4h-2.2l-.3-1.4a7.7 7.7 0 0 1-1.7-.9l-1.3.5-1.1-1.9 1.1-.8a7.3 7.3 0 0 1 0-1.9l-1.1-.8 1.1-1.9 1.3.5a7.7 7.7 0 0 1 1.7-.9l.3-1.4h2.2l.2 1.4a7.7 7.7 0 0 1 1.6.9l1.3-.5 1.1 1.9-1.1.8a7.3 7.3 0 0 1 0 1.9Z" transform="translate(-1 -1)"/></svg></button>
   <div class="deposit-pattern" aria-hidden="true"><span>₮</span><span>₮</span><span>₮</span><span>₮</span><span>₮</span><span>₮</span><span>₮</span><span>₮</span></div>
   <div class="demo-qr-wrap"><div class="fake-qr" id="depositQr" aria-label="QR-код адреса"></div></div>
  </div>
- <div class="deposit-address-title"><b>Мой адрес</b><span id="depositAssetLabel">USDT</span></div>
+ <div class="deposit-address-title"><b>Мой адрес</b><span id="depositAssetLabel">USDT (BEP20)</span></div>
  <div class="deposit-address-card">
   <div class="deposit-address-main"><span class="deposit-token-icon">₮<small>◆</small></span><div class="address-text" id="depositAddress">Адрес не выбран</div><button type="button" class="address-copy" onclick="copyDemoAddress()" aria-label="Скопировать адрес">▢</button></div>
   <div class="deposit-minimum">Мин. пополнение: 1 <span id="depositMinimumAsset">USDT</span></div>
@@ -1271,7 +1271,7 @@ function setSendAsset(asset){sendAsset=asset;const selected=coins.find(x=>x[2]==
 function reviewDemoSend(){const amount=Number(document.getElementById("sendAmount")?.value||0);if(!amount||amount<=0){notice("Укажи сумму перевода");return;}showModal("Перевод недоступен","Отправка переводов не подключена. Средства не списаны.");}
 function networkTitle(network){return networkCatalog[network]?.detail||network;}
 function openDemoDeposit(asset){depositAsset=asset;const choices=networkChoicesForAsset(asset);if(!choices.length){notice("Пополнение этого актива недоступно.");return;}depositNetwork=choices[0][0];document.getElementById("depositNetworkAsset").textContent=asset;document.getElementById("depositNetworkList").innerHTML=networkRows("deposit");openScreen("deposit-networks");}
-function setDepositNetwork(network){if(!demoDepositAddresses[network]){notice("Пополнение через эту сеть недоступно.");return;}depositNetwork=network;document.getElementById("depositAssetLabel").textContent=depositAsset;document.getElementById("depositMinimumAsset").textContent=depositAsset;document.getElementById("depositNetworkLabel").textContent=networkTitle(network);document.getElementById("depositNetworkShort").textContent=network;renderNetworkIcon("depositNetworkIcon",network);document.getElementById("depositAddress").textContent=demoDepositAddresses[network];const qr=document.getElementById("depositQr");if(qr)qr.innerHTML=decorativeQrMarkup();openScreen("deposit-detail");}
+function setDepositNetwork(network){if(!demoDepositAddresses[network]){notice("Пополнение через эту сеть недоступно.");return;}depositNetwork=network;document.getElementById("depositAssetLabel").textContent=depositAsset+" ("+network+")";document.getElementById("depositMinimumAsset").textContent=depositAsset;document.getElementById("depositNetworkShort").textContent=network;document.getElementById("depositAddress").textContent=demoDepositAddresses[network];const qr=document.getElementById("depositQr");if(qr)qr.innerHTML=decorativeQrMarkup();openScreen("deposit-detail");}
 function chooseDepositNetwork(){document.getElementById("depositNetworkAsset").textContent=depositAsset;document.getElementById("depositNetworkList").innerHTML=networkRows("deposit");openScreen("deposit-networks");}
 function copyDemoAddress(){showModal("Пополнение недоступно","Пополнение недоступно. Копирование адреса и переводы отключены.");}
 function openDemoWithdraw(asset){withdrawAsset=asset;const choices=networkChoicesForAsset(asset);if(!choices.length){notice("Для этого актива нет подтверждённой сети вывода в демо-списке.");return;}withdrawNetwork=choices[0][0];document.getElementById("withdrawAssetLabel").textContent=asset;document.getElementById("withdrawAvailable").textContent=money(demoBalances[asset]||0)+" "+asset;document.getElementById("withdrawNetworkLabel").textContent=networkTitle(withdrawNetwork);renderNetworkIcon("withdrawNetworkIcon",withdrawNetwork);openScreen("withdraw-detail");}
@@ -1279,7 +1279,7 @@ function chooseWithdrawNetwork(){document.getElementById("withdrawNetworkAsset")
 function setWithdrawNetwork(network){withdrawNetwork=network;document.getElementById("withdrawNetworkLabel").textContent=networkTitle(network);renderNetworkIcon("withdrawNetworkIcon",network);openScreen("withdraw-detail");}
 function reviewDemoWithdraw(){const address=document.getElementById("withdrawAddress")?.value.trim(),amount=Number(document.getElementById("withdrawAmount")?.value||0);if(!address||!amount||amount<=0){notice("Заполни адрес и сумму");return;}showModal("Вывод недоступен","Вывод средств не подключён. Заявка не отправлена, баланс не изменён.");}
 
-function decorativeQrMarkup(){let cells="";for(let y=0;y<25;y++){for(let x=0;x<25;x++){const finder=(x<7&&y<7)||(x>17&&y<7)||(x<7&&y>17);let on;if(finder){const fx=x>17?x-18:x,fy=y>17?y-18:y;on=fx===0||fx===6||fy===0||fy===6||(fx>=2&&fx<=4&&fy>=2&&fy<=4);}else{const v=(x*17+y*31+x*y*7+(x%3)*11+y%5*13)%19;on=v<8||((x+y)%11===0);}if(on)cells+='<rect x="'+(x+2)*5+'" y="'+(y+2)*5+'" width="4" height="4" rx=".7"/>';}}return '<svg viewBox="0 0 145 145" role="img" aria-label="QR-код профиля"><rect width="145" height="145" rx="8" fill="#fff"/><g fill="#17232e">'+cells+'</g><rect x="51" y="51" width="43" height="43" rx="10" fill="#fff" stroke="#dce4eb" stroke-width="2"/></svg>';}
+function decorativeQrMarkup(){let cells="";for(let y=0;y<25;y++){for(let x=0;x<25;x++){const finder=(x<7&&y<7)||(x>17&&y<7)||(x<7&&y>17);let on;if(finder){const fx=x>17?x-18:x,fy=y>17?y-18:y;on=fx===0||fx===6||fy===0||fy===6||(fx>=2&&fx<=4&&fy>=2&&fy<=4);}else{const v=(x*17+y*31+x*y*7+(x%3)*11+y%5*13)%19;on=v<8||((x+y)%11===0);}if(on)cells+='<rect x="'+(x+2)*5+'" y="'+(y+2)*5+'" width="4" height="4" rx=".7"/>';}}return '<svg viewBox="0 0 145 145" role="img" aria-label="QR-код адреса"><rect width="145" height="145" rx="8" fill="#fff"/><g fill="#45a9e3">'+cells+'</g><circle cx="72.5" cy="72.5" r="13.5" fill="#45a9e3"/><path d="m65 69 7.5 10 8-10" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>';}
 function openDemoQrCode(){showModal("Мой QR-код","QR-код профиля.",'<div class="demo-qr-wrap"><div class="fake-qr">'+decorativeQrMarkup()+'</div></div><div class="address-text">ПОПОЛНЕНИЕ НЕДОСТУПНО</div>');}
 function simulateQrScan(){showModal("QR-код распознан","QR-код",'<button class="primary" onclick="closeModal()">Понятно</button>');}
 function showModal(title,desc,extra=''){document.getElementById('modalTitle').textContent=title;document.getElementById('modalText').textContent=desc;document.getElementById('modalExtra').innerHTML=extra;document.getElementById('modalBackdrop').classList.add('show')}
