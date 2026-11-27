@@ -126,16 +126,27 @@ async function refreshMarketPrices(){
   coins.forEach(c=>{
    const id=marketCoinIds[c[2]],q=id&&data[id];
    if(!q||typeof q.usd!=="number")return;
+   swapRates[c[2]]=q.usd;
    c[3]="$"+q.usd.toLocaleString("en-US",{maximumFractionDigits:q.usd<1?6:2});
    const change=Number(q.usd_24h_change||0);c[4]=(change>0?"+":"")+change.toFixed(2)+"%";
   });
   swapRates.USDT=data.tether?.usd||1;swapRates.BTC=data.bitcoin?.usd||0;swapRates.ETH=data.ethereum?.usd||0;swapRates.SOL=data.solana?.usd||0;
   marketUpdatedAt=Date.now();
+  calculateSwap();
   if(document.getElementById("walletAssets")){renderWalletAssets();refreshWalletAssetBalances();}
   const stamp=document.getElementById("marketUpdatedAt");if(stamp)stamp.textContent="Курс обновлён: "+new Date(marketUpdatedAt).toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit"});
  }catch(e){console.warn("Не удалось обновить рыночные курсы:",e.message);}
 }
-function calculateSwap(){const result=document.getElementById("swapResult");if(result)result.textContent="— "+swapTo;const balance=document.getElementById("exchangeBalance");if(balance)balance.textContent=money(demoBalances[swapFrom]||0)+" "+swapFrom;}
+function calculateSwap(){
+ const input=document.getElementById("swapAmount"),result=document.getElementById("swapResult");
+ const amount=Number(input?.value),fromRate=Number(swapRates[swapFrom]),toRate=Number(swapRates[swapTo]);
+ if(result){
+  if(!input?.value||!Number.isFinite(amount)||amount<=0)result.textContent="— "+swapTo;
+  else if(!Number.isFinite(fromRate)||fromRate<=0||!Number.isFinite(toRate)||toRate<=0)result.textContent="Курс недоступен";
+  else result.textContent=money(amount*fromRate/toRate)+" "+swapTo;
+ }
+ const balance=document.getElementById("exchangeBalance");if(balance)balance.textContent=money(demoBalances[swapFrom]||0)+" "+swapFrom;
+}
 function swapCurrencies(){calculateSwap();}
 function submitSwap(){const amount=Number(document.getElementById("swapAmount")?.value);if(!Number.isFinite(amount)||amount<=0){notice("Укажи сумму для обмена");return;}showModal("Обмен недоступен","Модуль обмена не подключён. Средства не списываются.");}
 function initDemoUi(){
@@ -971,6 +982,7 @@ button:focus-visible,.setting:focus-visible{outline:2px solid #55b9ed;outline-of
 <section class="screen exchange-screen" id="exchange">
  <div class="swap-caption"><span>Вы отправляете</span><span class="swap-wallet"><svg class="swap-wallet-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H20v16H6.5A2.5 2.5 0 0 1 4 17.5z"/><path d="M4 7h13a2 2 0 0 1 2 2v6h-5a3 3 0 0 1 0-6h5"/><circle cx="14" cy="12" r=".7" fill="currentColor" stroke="none"/></svg> <b id="exchangeBalance">0</b> <a onclick="openDemoTopup('USDT')">МАКС</a></span></div>
  <button class="swap-asset" type="button" onclick="chooseSwapAsset('from')"><span class="coin usdt">₮</span><strong>USDT <i>›</i></strong><b class="swap-amount">0</b></button>
+ <input class="amount-field swap-input" id="swapAmount" type="number" min="0" step="any" inputmode="decimal" placeholder="Сумма для обмена" oninput="calculateSwap()">
  <div class="swap-divider"><span></span><button type="button" aria-label="Поменять валюты" onclick="swapDirection()"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4v15m0 0-4-4m4 4 4-4M16 20V5m0 0-4 4m4-4 4 4"/></svg></button><span></span></div>
  <div class="swap-caption swap-receive-caption">Вы получаете</div>
  <button class="swap-asset" type="button" onclick="chooseSwapAsset('to')"><span class="coin gram">✦</span><strong>GRAM <i>›</i></strong><b class="swap-amount">0</b></button>
@@ -1008,8 +1020,8 @@ function renderSwapAssets(){
  const from=swapCoin(swapFrom),to=swapCoin(swapTo);
  const rows=document.querySelectorAll("#exchange .swap-asset");
  if(rows.length!==2)return;
- rows[0].innerHTML='<span class="coin '+from[6]+'">'+from[0]+'</span><strong>'+from[2]+' <i>›</i></strong><b class="swap-amount">0</b>';
- rows[1].innerHTML='<span class="coin '+to[6]+'">'+to[0]+'</span><strong>'+to[2]+' <i>›</i></strong><b class="swap-amount">0</b>';
+ rows[0].innerHTML='<span class="coin '+from[6]+'">'+from[0]+'</span><strong>'+from[2]+' <i>›</i></strong><b class="swap-amount">'+money(demoBalances[swapFrom]||0)+'</b>';
+ rows[1].innerHTML='<span class="coin '+to[6]+'">'+to[0]+'</span><strong>'+to[2]+' <i>›</i></strong><b class="swap-amount" id="swapResult">— '+to[2]+'</b>';
  const topup=document.getElementById("swapTopupButton");
  if(topup)topup.textContent="Пополнить "+from[2];
  const balance=document.getElementById("exchangeBalance");
@@ -1026,9 +1038,9 @@ function selectSwapAsset(side,symbol){
   const alternative=coins.find(c=>c[2]!==symbol);
   if(side==="from")swapTo=alternative[2];else swapFrom=alternative[2];
  }
- closeModal();renderSwapAssets();
+ closeModal();renderSwapAssets();calculateSwap();
 }
-function swapDirection(){const old=swapFrom;swapFrom=swapTo;swapTo=old;renderSwapAssets();}
+function swapDirection(){const old=swapFrom;swapFrom=swapTo;swapTo=old;renderSwapAssets();calculateSwap();}
 let walletAssetsExpanded=false;
 let balanceVisible=true;
 function renderWalletAssets(){const root=document.getElementById('walletAssets');if(!root)return;root.innerHTML=coins.slice(0,walletAssetsExpanded?coins.length:7).map(c=>coinRow(c)).join('')+'<button class="show-more" type="button" onclick="toggleWalletAssets()"><span class="hide-icon">'+(walletAssetsExpanded?'<svg viewBox="0 0 24 24"><path d="m6 14 6-6 6 6"/></svg>':'<svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>')+'</span>'+(walletAssetsExpanded?'Скрыть':'Показать больше')+'</button>';refreshWalletAssetBalances();}
