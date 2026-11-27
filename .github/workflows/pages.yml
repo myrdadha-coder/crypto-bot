@@ -38,7 +38,7 @@ jobs:
             if (source.trim()) inlineScripts.push(source);
           }
           if (!inlineScripts.length) throw new Error('No inline JavaScript found');
-          new vm.Script(inlineScripts.join('\\n'), { filename: 'combined inline app scripts' });
+          new vm.Script(inlineScripts.join(String.fromCharCode(10)), { filename: 'combined inline app scripts' });
           if (html.split('function selectHistoryFilter(').length - 1 !== 1) throw new Error('History filter handler is duplicated or missing');
           for (const screen of ['wallet', 'history', 'exchange', 'p2p', 'profile']) {
             if (!html.includes('id="' + screen + '"') && !html.includes("id='" + screen + "'")) throw new Error('Missing screen: ' + screen);
