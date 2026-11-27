@@ -44,6 +44,10 @@ jobs:
             if (!html.includes('id="' + screen + '"') && !html.includes("id='" + screen + "'")) throw new Error('Missing screen: ' + screen);
           }
           if (!html.includes('apiDemo("history")')) throw new Error('History API is not wired');
+          for (const feature of ['id="swapAmount"', 'oninput="calculateSwap()"', 'id="swapResult"', 'swapRates[c[2]]=q.usd', 'amount*fromRate/toRate', 'Курс недоступен']) {
+            if (!html.includes(feature)) throw new Error('Swap quote check failed: ' + feature);
+          }
+          if (!html.includes('let swapFrom="USDT",swapTo="SOL"')) throw new Error('Default swap pair has no quoted market price');
           if (html.includes('demoBuyQty') || html.includes('submitDemoBuy')) throw new Error('Disabled P2P purchase UI is still present');
           if (!html.includes('aria-label="Crypto Pay" onclick="openAccountSection(')) throw new Error('Crypto Pay navigation is incorrect');
           if (!worker.includes('status:501')) throw new Error('P2P purchase endpoint is not safely disabled');
