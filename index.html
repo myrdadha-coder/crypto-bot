@@ -1134,7 +1134,6 @@ document.getElementById('sendAssetList').innerHTML=listCoins('send');
 const networkCatalog={TRC20:{name:"TRON",detail:"TRON (TRC20)"},BEP20:{name:"BNB Smart Chain",detail:"BNB Smart Chain (BEP20)"},TON:{name:"TON",detail:"TON"},SOL:{name:"Solana",detail:"Solana (SPL)"},ERC20:{name:"Ethereum",detail:"Ethereum (ERC20)"},BTC:{name:"Bitcoin",detail:"Bitcoin"},DOGE:{name:"Dogecoin",detail:"Dogecoin"},LTC:{name:"Litecoin",detail:"Litecoin"}};
 const assetNetworks={USDT:["TRC20","BEP20","TON","SOL","ERC20"],GRAM:["TON"],SOL:["SOL"],TRX:["TRC20"],BTC:["BTC"],ETH:["ERC20"],DOGE:["DOGE"],LTC:["LTC"],BNB:["BEP20"],USDC:["ERC20"],XAUT:["ERC20"],HAUT:["ERC20"]};
 const demoDepositAddresses={TRC20:"TFGYaqcb1h46KofUBWKaGuEULjYHnzRMrP",BEP20:"0xBB26e15c06918A2c81c0dB8076F7f4a60951cA07",TON:"UQAjlBA6Dwfh7u4A-bIm4luYh3VMWzTgfYDBk6PY8fnVzq2t",SOL:"AzipMp95M69Fi74q8t1JYmSPrtna7Vxq84Ad2LNxXdbP",ERC20:"0xBB26e15c06918A2c81c0dB8076F7f4a60951cA07",BTC:"bc1qzsw0f2wjw7m758y2swvunvzmefjdyq942nnmzp",DOGE:"DB82FuimUhNS62quhhrAb9NsXwDsdfwXhb",LTC:"ltc1qpled3utccrjlqskn6lcpane2su4x2j52a8qrjv"};
-let depositAsset="USDT",depositNetwork="TRC20",withdrawAsset="USDT",withdrawNetwork="TRC20";
 function networkChoicesForAsset(asset){return (assetNetworks[asset]||[]).map(code=>[code,networkCatalog[code].name,networkCatalog[code].detail]);}
 function networkIconMarkup(network){
  const icons={
