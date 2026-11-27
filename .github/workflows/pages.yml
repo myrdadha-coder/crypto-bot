@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
-      - name: Validate source and demo database schema
+      - name: Validate source, wallet flows and demo database schema
         run: |
           node --check src/index.js
           node --input-type=module <<'NODE'
@@ -38,7 +38,7 @@ jobs:
             if (source.trim()) inlineScripts.push(source);
           }
           if (!inlineScripts.length) throw new Error('No inline JavaScript found');
-          new vm.Script(inlineScripts.join('\n'), { filename: 'combined inline app scripts' });
+          new vm.Script(inlineScripts.join('\\n'), { filename: 'combined inline app scripts' });
           if (html.split('function selectHistoryFilter(').length - 1 !== 1) throw new Error('History filter handler is duplicated or missing');
           for (const screen of ['wallet', 'history', 'exchange', 'p2p', 'profile']) {
             if (!html.includes('id="' + screen + '"') && !html.includes("id='" + screen + "'")) throw new Error('Missing screen: ' + screen);
@@ -48,52 +48,25 @@ jobs:
             if (!html.includes(feature)) throw new Error('Swap quote check failed: ' + feature);
           }
           if (!html.includes('let swapFrom="USDT",swapTo="SOL"')) throw new Error('Default swap pair has no quoted market price');
-          const networkCodes = ['TRC20', 'BEP20', 'TON', 'SOL', 'ERC20'];
-          for (const code of networkCodes) {
+          for (const code of ['TRC20', 'BEP20', 'TON', 'SOL', 'ERC20']) {
             if (!html.includes(code + ":'<svg")) throw new Error('Missing inline network logo: ' + code);
           }
           if (!html.includes('networkIconMarkup(n[0])')) throw new Error('Network list does not render SVG logos');
-          if (!html.includes('renderNetworkIcon("depositNetworkIcon",network)')) throw new Error('Deposit selected-network icon is not updated');
-          if (!html.includes('renderNetworkIcon("withdrawNetworkIcon",network)')) throw new Error('Withdrawal selected-network icon is not updated');
+          if (!html.includes('renderNetworkIcon("depositNetworkIcon",network)') || !html.includes('renderNetworkIcon("withdrawNetworkIcon",network)')) throw new Error('Selected network icons are not updated');
           if (!html.includes('id="depositNetworkIcon"') || !html.includes('id="withdrawNetworkIcon"')) throw new Error('Selected network icon mount is missing');
           if (html.includes('<span class="network-icon">\'+n[0]+\'</span>')) throw new Error('Network list still renders text abbreviations instead of logos');
-          if (html.includes('demoBuyQty') || html.includes('submitDemoBuy')) throw new Error('Disabled P2P purchase UI is still present');
+          if (html.includes('id="solana-net-gradient"')) throw new Error('Network SVG contains a duplicate-prone gradient id');
           if (!html.includes('function openPromo(target)')) throw new Error('Wallet promo navigation handler is missing');
-          for (const [promo, screen] of Object.entries({festival:'festival', p2p:'p2p', qr:'qrpay', swap:'exchange'})) {
+          for (const [promo, screen] of Object.entries({festival: 'festival', p2p: 'p2p', qr: 'qrpay', swap: 'exchange'})) {
             if (!html.includes(promo + ':"' + screen + '"')) throw new Error('Wallet promo route is missing: ' + promo);
           }
           if (!html.includes('const amount=Number(demoBalances[c[2]]||0),usd=amount*walletUsdRate(c)')) throw new Error('Send/withdraw asset rows do not use demo balances and market values');
           if (!html.includes('money(usd)') || !html.includes("money(amount)+' '+c[2]")) throw new Error('Send/withdraw asset rows do not display calculated values');
+          if (html.includes('demoBuyQty') || html.includes('submitDemoBuy')) throw new Error('Disabled P2P purchase UI is still present');
           if (!html.includes('aria-label="Crypto Pay" onclick="openAccountSection(')) throw new Error('Crypto Pay navigation is incorrect');
           if (!worker.includes('status:501')) throw new Error('P2P purchase endpoint is not safely disabled');
           if (!worker.includes('!currencies.includes(currency)')) throw new Error('Payment currency validation is not using the shared currency list');
-          console.log('Passed: Worker syntax, combined inline JS syntax, mirrored HTML, screens, history wiring, unique filter, P2P safety and currency validation.');
-          NODE
-          python3 - <<'PY'
-          import sqlite3
-          db = sqlite3.connect(':memory:')
-          db.executescript(open('schema.sql', encoding='utf-8').read())
-          tables = {row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
-          expected = {'users', 'balances', 'demo_transactions', 'demo_payments'}
-          assert expected <= tables, f'Missing tables: {expected - tables}'
-          print('Passed: SQLite schema creates all expected tables.')
-          PY
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: .
-          name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
-      - name: Wait for Pages artifact indexing
-        run: sleep 8
-      - id: deployment
-        uses: actions/deploy-pages@v4
-        with:
-          artifact_name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
-+money(usd)")) throw new Error('Send/withdraw asset rows do not display calculated values');
-          if (html.includes('id="solana-net-gradient"')) throw new Error('Network SVG uses a duplicate-prone gradient id');
-          if (!html.includes('aria-label="Crypto Pay" onclick="openAccountSection(')) throw new Error('Crypto Pay navigation is incorrect');
-          if (!worker.includes('status:501')) throw new Error('P2P purchase endpoint is not safely disabled');
-          if (!worker.includes('!currencies.includes(currency)')) throw new Error('Payment currency validation is not using the shared currency list');
-          console.log('Passed: Worker syntax, combined inline JS syntax, mirrored HTML, screens, history wiring, unique filter, P2P safety and currency validation.');
+          console.log('Passed: Worker syntax, inline JS syntax, mirrored HTML, swap, wallet network icons, promo routes, asset balances, history, P2P safety and currency validation.');
           NODE
           python3 - <<'PY'
           import sqlite3
