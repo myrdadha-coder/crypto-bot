@@ -60,23 +60,22 @@ jobs:
           for (const [promo, screen] of Object.entries({festival: 'festival', p2p: 'p2p', qr: 'qrpay', swap: 'exchange'})) {
             if (!html.includes(promo + ':"' + screen + '"')) throw new Error('Wallet promo route is missing: ' + promo);
           }
-          if (!html.includes('const amount=Number(demoBalances[c[2]]||0),usd=amount*walletUsdRate(c)')) throw new Error('Send/withdraw asset rows do not use demo balances and market values');
+          if (!html.includes('const amount=Number(demoBalances[c[2]]||0),rate=walletUsdRate(c),usd=rate===null?null:amount*rate')) throw new Error('Send/withdraw asset rows do not use demo balances and market values');
           if (!html.includes('money(usd)') || !html.includes("money(amount)+' '+c[2]")) throw new Error('Send/withdraw asset rows do not display calculated values');
           if (html.includes('demoBuyQty') || html.includes('submitDemoBuy')) throw new Error('Disabled P2P purchase UI is still present');
           if (!html.includes('aria-label="Crypto Pay" onclick="openAccountSection(')) throw new Error('Crypto Pay navigation is incorrect');
           if (!worker.includes('status:501')) throw new Error('P2P purchase endpoint is not safely disabled');
           if (!worker.includes('!currencies.includes(currency)')) throw new Error('Payment currency validation is not using the shared currency list');
 
-          for (const address of ['TFGYaqcb1h46KofUBWKaGuEULjYHnzRMrP', '0xBB26e15c06918A2c81c0dB8076F7f4a60951cA07', 'UQAjlBA6Dwfh7u4A-bIm4luYh3VMWzTgfYDBk6PY8fnVzq2t', 'AzipMp95M69Fi74q8t1JYmSPrtna7Vxq84Ad2LNxXdbP', 'bc1qzsw0f2wjw7m758y2swvunvzmefjdyq942nnmzp', 'DB82FuimUhNS62quhhrAb9NsXwDsdfwXhb', 'ltc1qpled3utccrjlqskn6lcpane2su4x2j52a8qrjv']) {
+          for (const address of ['TFGYaqcb1h46KofUBWKaGuEULjYHnzRMrP', '0xBB26e15c06918A2c81c0dB8076F7f4a60951cA07', 'UQAjlBA6Dwfh7u4A-bIm4luYh3VMWzTgfYDBk6PY8fnVzq2t', 'AzipMp95M69Fi74q8t1JYmSPrtna7Vxq84Ad2LNxXdbP', 'bc1qzsw0f2wjw7m758y2swvunvzmefjdyq942nnmzp', 'ltc1qpled3utccrjlqskn6lcpane2su4x2j52a8qrjv']) {
             if (!html.includes(address)) throw new Error('Missing demo address: ' + address);
           }
-          for (const network of ['TRC20','BEP20','TON','SOL','ERC20','BTC','DOGE','LTC']) {
+          for (const network of ['TRC20','BEP20','TON','SOL','ERC20','BTC','LTC']) {
             if (!html.includes(network + ':')) throw new Error('Missing network support: ' + network);
           }
-          for (const asset of ['USDT','GRAM','SOL','TRX','BTC','ETH','DOGE','LTC','BNB','XAUT','HAUT']) {
+          for (const asset of ['USDT','GRAM','SOL','TRX','BTC','ETH','LTC','BNB','USDC','XAUT']) {
             if (!html.includes(asset + ':[')) throw new Error('Missing asset network mapping: ' + asset);
           }
-          if (!html.includes("['H','HAUT','HAUT','—','0.00%','0','xaut']")) throw new Error('Requested HAUT demo asset row is missing');
           if (!html.includes('id="walletAssetsToggle"') || !html.includes('aria-controls="walletAssets"') || !html.includes('function toggleWalletAssets()')) throw new Error('Wallet assets toggle is not wired accessibly');
           if (!html.includes('function decorativeQrMarkup()') || !html.includes('Нерабочий декоративный QR-макет')) throw new Error('Decorative non-payment QR is missing');
           if (!html.includes('Копирование и реальные переводы отключены')) throw new Error('Demo-only address warning is missing');
@@ -87,6 +86,9 @@ jobs:
           if (!html.includes('USDC:["ERC20","BEP20"]')) throw new Error('USDC network list differs from Crypto Bot support docs');
           if (worker.includes('"DOGE"') || worker.includes('"TON"')) throw new Error('Delisted or renamed currency remains in demo database catalog');
           if (!worker.includes('["Tether Gold","XAUT"]')) throw new Error('XAUT missing from worker wallet summary');
+          if (!html.includes('grid-template-columns:repeat(4,1fr)') || !html.includes('>Трейд</button>') || !html.includes('>Ещё</button>')) throw new Error('Bottom navigation does not match the official four-tab layout');
+          if (!html.includes('onclick="openScreen(\'p2p\')"') || !html.includes('onclick="openScreen(\'history\')"')) throw new Error('More menu is missing P2P or transaction history shortcuts');
+          if (!html.includes('function walletUsdRate(coin){const raw=') || !html.includes('value===null?"$ —"')) throw new Error('Unknown market prices must not be presented as zero valuation');
           console.log('Passed: Worker syntax, inline JS syntax, mirrored HTML, swap, wallet network icons, promo routes, asset balances, history, P2P safety and currency validation.');
           NODE
           python3 - <<'PY'
