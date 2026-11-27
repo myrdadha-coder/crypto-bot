@@ -6,7 +6,7 @@ const demoOffers = [
  {id:"offer-4",name:"FastHub",country:"🇷🇺 RU",deals:25,rating:"100.00%",price:88.65,available:1646,limits:"20K – 145.98K RUB",payment:"СБП, Т-Банк",minutes:15}
 ];
 
-const currencies = ["BTC", "USDT", "GRAM", "TON", "ETH", "SOL", "TRX"];
+const currencies = ["USDT", "GRAM", "SOL", "TRX", "BTC", "ETH", "DOGE", "LTC", "BNB", "USDC", "XAUT", "TON"];
 
 export default {
   async fetch(request, env) {
@@ -55,7 +55,7 @@ export default {
         const expiry = String(body.expiry || ""), cvv = String(body.cvv || "");
         const validTestCard = cardNumber === "4242424242424242" && expiry === "12/30" && cvv === "123";
         const validAmount = Number.isFinite(amount) && amount >= 0.01 && amount <= 100000 && Math.round(amount * 100000000) / 100000000 === amount;
-        if (!["USDT","BTC","GRAM","TON","ETH","SOL","TRX"].includes(currency) || !validAmount || !validTestCard) {
+        if (!currencies.includes(currency) || !validAmount || !validTestCard) {
           return demoJson({ error:"Платёж отклонён. Доступна только тестовая карта 4242 4242 4242 4242, срок 12/30, CVV 123. Проверь сумму. Реальные карты не принимаются." },request,{status:400});
         }
         const paymentId = crypto.randomUUID();
@@ -79,15 +79,7 @@ export default {
         return demoJson({ok:true,status:"paid",currency:payment.currency,amount:payment.amount},request);
       }
       if (url.pathname === "/api/demo/buy" && request.method === "POST") {
-        const body = await request.json().catch(() => ({}));
-        const offer = demoOffers.find(item => item.id === String(body.offerId || ""));
-        const quantity = Number(body.quantity);
-        if (!offer || !Number.isFinite(quantity) || quantity <= 0 || quantity > offer.available) return demoJson({ error:"Некорректное объявление или количество" }, request, {status:400});
-        const total = Math.round(quantity * offer.price * 100) / 100;
-        const debit = await env.DB.prepare("UPDATE balances SET amount=amount-? WHERE user_id=? AND currency='USDT' AND amount>=?").bind(total,userId,total).run();
-        if (!debit.meta?.changes) return demoJson({error:"Недостаточно демо-баланса USDT",required:total},request,{status:409});
-        await env.DB.prepare("INSERT INTO demo_transactions(user_id,kind,currency,amount,details,created_at) VALUES(?,?,?,?,?,?)").bind(userId,"demo_purchase","USDT",-total,JSON.stringify({offerId:offer.id,quantity}),Date.now()).run();
-        return demoJson({ok:true,mode:"demo",quantity,total,currency:"USDT",offer:offer.name},request);
+        return demoJson({error:"Покупка через P2P не подключена. Баланс не изменён."},request,{status:501});
       }
       if (url.pathname === "/api/demo/history" && request.method === "GET") {
         const rows = await env.DB.prepare("SELECT kind,currency,amount,details,created_at FROM demo_transactions WHERE user_id=? ORDER BY created_at DESC LIMIT 100").bind(userId).all();
