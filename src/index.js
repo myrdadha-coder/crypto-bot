@@ -124,7 +124,8 @@ function corsHeaders() {
 function demoJson(data, request, options={}) {
   return Response.json(data, { ...options, headers: { ...corsHeaders(), ...(options.headers||{}) } });
 }
-\nasync function handleUpdate(update, env) {
+
+async function handleUpdate(update, env) {
   const message = update.message;
   if (!message?.text || !message.from) return;
 
