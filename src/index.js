@@ -6,7 +6,7 @@ const demoOffers = [
  {id:"offer-4",name:"FastHub",country:"🇷🇺 RU",deals:25,rating:"100.00%",price:88.65,available:1646,limits:"20K – 145.98K RUB",payment:"СБП, Т-Банк",minutes:15}
 ];
 
-const currencies = ["USDT", "GRAM", "SOL", "TRX", "BTC", "ETH", "DOGE", "LTC", "BNB", "USDC", "XAUT", "TON"];
+const currencies = ["USDT", "GRAM", "SOL", "TRX", "BTC", "ETH", "LTC", "BNB", "USDC", "XAUT"];
 
 export default {
   async fetch(request, env) {
@@ -278,7 +278,7 @@ async function walletMessage(env, userId) {
   const balances = Object.fromEntries(rows.results.map(row => [String(row.currency).toUpperCase(), Number(row.amount)]));
   const assets = [
     ["Tether","USDT"],["Gram","GRAM"],["Solana","SOL"],["TRON","TRX"],
-    ["Bitcoin","BTC"],["Ethereum","ETH"],["Dogecoin","DOGE"],["Litecoin","LTC"],
+    ["Bitcoin","BTC"],["Ethereum","ETH"],["Litecoin","LTC"],
     ["Binance Coin","BNB"],["USD Coin","USDC"],["Tether Gold","XAUT"]
   ];
   const lines = assets.map(([name, code]) => "🪙 " + name + ": " + (balances[code] || 0) + " " + code);
