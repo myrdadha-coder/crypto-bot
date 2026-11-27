@@ -50,7 +50,7 @@ jobs:
           if (!html.includes('let swapFrom="USDT",swapTo="SOL"')) throw new Error('Default swap pair has no quoted market price');
           const networkCodes = ['TRC20', 'BEP20', 'TON', 'SOL', 'ERC20'];
           for (const code of networkCodes) {
-            if (!html.includes(code + ':<svg')) throw new Error('Missing inline network logo: ' + code);
+            if (!html.includes(code + ":'<svg")) throw new Error('Missing inline network logo: ' + code);
           }
           if (!html.includes('networkIconMarkup(n[0])')) throw new Error('Network list does not render SVG logos');
           if (!html.includes('renderNetworkIcon("depositNetworkIcon",network)')) throw new Error('Deposit selected-network icon is not updated');
