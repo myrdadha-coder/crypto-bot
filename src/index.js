@@ -51,7 +51,7 @@ export default {
       if (url.pathname === "/api/demo/payment/create" && request.method === "POST") {
         const body = await request.json().catch(() => ({}));
         const amount = Number(body.amount), currency = String(body.currency || "USDT").toUpperCase();
-        const cardNumber = String(body.cardNumber || "").replace(/\\D/g, "");
+        const cardNumber = String(body.cardNumber || "").replace(/\D/g, "");
         const expiry = String(body.expiry || ""), cvv = String(body.cvv || "");
         const validTestCard = cardNumber === "4242424242424242" && expiry === "12/30" && cvv === "123";
         const validAmount = Number.isFinite(amount) && amount >= 0.01 && amount <= 100000 && Math.round(amount * 100000000) / 100000000 === amount;
@@ -131,7 +131,7 @@ async function handleUpdate(update, env) {
 
   const userId = String(message.from.id);
   const text = message.text.trim();
-  const command = text.split(/\\s+/, 1)[0].replace(/@\\w+$/, "").toLowerCase();
+  const command = text.split(/\s+/, 1)[0].replace(/@\w+$/, "").toLowerCase();
 
   if (/^\/start(?:@\w+)?(?:\s|$)/i.test(text)) {
     await env.DB.prepare(
