@@ -76,7 +76,6 @@ function escapeDemoHtml(value){
  return String(value??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
 }
 function openP2PAction(kind){
- p2pMode=kind==="sell"?"sell":"buy";
  showModal(kind==="sell"?"Продажа криптовалюты":"Покупка криптовалюты","Для совершения операции необходимо подключить рабочий P2P-модуль. Сейчас доступен только демонстрационный интерфейс.");
 }
 function renderP2P(){
@@ -1208,7 +1207,7 @@ if (targetScreen && document.getElementById(targetScreen)) {
  } else if(requestedScreen==="p2p-sell"){
   openP2PAction("sell");
  } else if(requestedScreen==="p2p-deals"){
-  document.querySelector('#p2pTabs [data-kind="deals"]')?.click();
+  p2pMode="deals";renderP2P();
  } else if(requestedScreen==="p2p-create" || requestedScreen==="p2p-payment"){
   const titles={"p2p-deals":"Мои сделки","p2p-create":"Создать объявление","p2p-payment":"Оплата и валюта"};
   showModal(titles[requestedScreen],"Раздел");
