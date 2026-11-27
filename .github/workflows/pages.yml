@@ -81,6 +81,12 @@ jobs:
           if (!html.includes('function decorativeQrMarkup()') || !html.includes('Нерабочий декоративный QR-макет')) throw new Error('Decorative non-payment QR is missing');
           if (!html.includes('Копирование и реальные переводы отключены')) throw new Error('Demo-only address warning is missing');
 
+          const expectedCoins = ['USDT','GRAM','SOL','TRX','BTC','ETH','LTC','BNB','USDC','XAUT'];
+          for (const coin of expectedCoins) if (!html.includes("'" + coin + "'") && !html.includes('"' + coin + '"')) throw new Error('Missing official wallet coin: ' + coin);
+          if (/['"]DOGE['"]|['"]HAUT['"]/.test(html)) throw new Error('Delisted or unsupported asset remains in wallet UI');
+          if (!html.includes('USDC:["ERC20","BEP20"]')) throw new Error('USDC network list differs from Crypto Bot support docs');
+          if (worker.includes('"DOGE"') || worker.includes('"TON"')) throw new Error('Delisted or renamed currency remains in demo database catalog');
+          if (!worker.includes('["Tether Gold","XAUT"]')) throw new Error('XAUT missing from worker wallet summary');
           console.log('Passed: Worker syntax, inline JS syntax, mirrored HTML, swap, wallet network icons, promo routes, asset balances, history, P2P safety and currency validation.');
           NODE
           python3 - <<'PY'
