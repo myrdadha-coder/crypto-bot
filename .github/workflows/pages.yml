@@ -52,8 +52,9 @@ jobs:
             if (!html.includes(code + ":'<svg")) throw new Error('Missing inline network logo: ' + code);
           }
           if (!html.includes('networkIconMarkup(n[0])')) throw new Error('Network list does not render SVG logos');
-          if (!html.includes('renderNetworkIcon("depositNetworkIcon",network)') || !html.includes('renderNetworkIcon("withdrawNetworkIcon",network)')) throw new Error('Selected network icons are not updated');
-          if (!html.includes('id="depositNetworkIcon"') || !html.includes('id="withdrawNetworkIcon"')) throw new Error('Selected network icon mount is missing');
+          if (!html.includes('renderNetworkIcon("withdrawNetworkIcon",network)')) throw new Error('Selected withdrawal network icon is not updated');
+          if (!html.includes('id="withdrawNetworkIcon"') || !html.includes('class="deposit-settings"')) throw new Error('Deposit settings or withdrawal network icon mount is missing');
+          if (!html.includes('textContent=depositAsset+" ("+network+")"')) throw new Error('Deposit asset/network label is not updated');
           if (html.includes('<span class="network-icon">\'+n[0]+\'</span>')) throw new Error('Network list still renders text abbreviations instead of logos');
           if (html.includes('id="solana-net-gradient"')) throw new Error('Network SVG contains a duplicate-prone gradient id');
           if (!html.includes('function openPromo(target)')) throw new Error('Wallet promo navigation handler is missing');
