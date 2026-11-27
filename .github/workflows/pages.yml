@@ -76,6 +76,7 @@ jobs:
           for (const asset of ['USDT','GRAM','SOL','TRX','BTC','ETH','DOGE','LTC','BNB','XAUT','HAUT']) {
             if (!html.includes(asset + ':[')) throw new Error('Missing asset network mapping: ' + asset);
           }
+          if (!html.includes("['H','HAUT','HAUT','—','0.00%','0','xaut']")) throw new Error('Requested HAUT demo asset row is missing');
           if (!html.includes('id="walletAssetsToggle"') || !html.includes('aria-controls="walletAssets"') || !html.includes('function toggleWalletAssets()')) throw new Error('Wallet assets toggle is not wired accessibly');
           if (!html.includes('function decorativeQrMarkup()') || !html.includes('Нерабочий декоративный QR-макет')) throw new Error('Decorative non-payment QR is missing');
           if (!html.includes('Копирование и реальные переводы отключены')) throw new Error('Demo-only address warning is missing');
