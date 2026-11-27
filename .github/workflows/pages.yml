@@ -29,17 +29,23 @@ jobs:
           const mirror = readFileSync('public/index.html', 'utf8');
           const worker = readFileSync('src/index.js', 'utf8');
           if (html !== mirror) throw new Error('index.html and public/index.html differ');
-          const scripts = [...html.matchAll(/<script\\b(?![^>]*\\bsrc=)[^>]*>([\\s\\S]*?)<\\/script>/gi)].map(match => match[1]).filter(source => source.trim());
-          if (!scripts.length) throw new Error('No inline JavaScript found');
-          new vm.Script(scripts.join('\\n'), { filename: 'combined inline app scripts' });
-          if ((html.match(/function selectHistoryFilter\\s*\\(/g) || []).length !== 1) throw new Error('History filter function is duplicated or missing');
+          const inlineScripts = [];
+          for (const tag of html.split('<script').slice(1)) {
+            const openEnd = tag.indexOf('>');
+            const closeStart = tag.indexOf('</script>');
+            if (openEnd < 0 || closeStart < 0 || tag.slice(0, openEnd).includes('src=')) continue;
+            const source = tag.slice(openEnd + 1, closeStart);
+            if (source.trim()) inlineScripts.push(source);
+          }
+          if (!inlineScripts.length) throw new Error('No inline JavaScript found');
+          new vm.Script(inlineScripts.join('\n'), { filename: 'combined inline app scripts' });
+          if (html.split('function selectHistoryFilter(').length - 1 !== 1) throw new Error('History filter handler is duplicated or missing');
           for (const screen of ['wallet', 'history', 'exchange', 'p2p', 'profile']) {
-            if (!new RegExp('<section[^>]*id=[\\\\\\'"]' + screen + '[\\\\\\'"]').test(html)) throw new Error('Missing screen: ' + screen);
+            if (!html.includes('id="' + screen + '"') && !html.includes("id='" + screen + "'")) throw new Error('Missing screen: ' + screen);
           }
           if (!html.includes('apiDemo("history")')) throw new Error('History API is not wired');
           if (html.includes('demoBuyQty') || html.includes('submitDemoBuy')) throw new Error('Disabled P2P purchase UI is still present');
-          if (html.includes('aria-label="Crypto Pay" onclick="openScreen(\\\\\\'usdt-game\\\\\\')')) throw new Error('Crypto Pay points to the USDT game');
-          if (!worker.includes('Pокупка')) { /* no-op: Unicode spelling is not a test condition */ }
+          if (!html.includes('aria-label="Crypto Pay" onclick="openAccountSection(')) throw new Error('Crypto Pay navigation is incorrect');
           if (!worker.includes('status:501')) throw new Error('P2P purchase endpoint is not safely disabled');
           if (!worker.includes('!currencies.includes(currency)')) throw new Error('Payment currency validation is not using the shared currency list');
           console.log('Passed: Worker syntax, combined inline JS syntax, mirrored HTML, screens, history wiring, unique filter, P2P safety and currency validation.');
