@@ -1126,7 +1126,7 @@ function listCoins(mode){
   const amount=Number(demoBalances[c[2]]||0),rate=walletUsdRate(c),usd=rate===null?null:amount*rate;
   const action=mode==='deposit'?'openDemoDeposit':mode==='withdraw'?'openDemoWithdraw':'setSendAsset';
   const trailing=mode==='deposit'?'<span class="arr">›</span>':'<span class="coin-balance">'+money(amount)+' '+c[2]+'<small>$'+(usd===null?'—':money(usd))+'</'+'small></span>';
-  return '<button type="button" class="list-row coin-choice" onclick="'+action+'(\\''+c[2]+'\\')"><span class="coin '+c[6]+'">'+c[0]+'</span><span class="details"><b>'+c[2]+'</b><small>'+c[1]+'</small></span>'+trailing+'</button>';
+  return '<button type="button" class="list-row coin-choice" onclick="'+action+'(\''+c[2]+'\')"><span class="coin '+c[6]+'">'+c[0]+'</span><span class="details"><b>'+c[2]+'</b><small>'+c[1]+'</small></span>'+trailing+'</button>';
  }).join('');
 }
 document.getElementById('depositList').innerHTML=listCoins('deposit');document.getElementById('withdrawList').innerHTML=listCoins('withdraw');
