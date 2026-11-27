@@ -63,7 +63,7 @@ jobs:
             if (!html.includes(promo + ':"' + screen + '"')) throw new Error('Wallet promo route is missing: ' + promo);
           }
           if (!html.includes('const amount=Number(demoBalances[c[2]]||0),usd=amount*walletUsdRate(c)')) throw new Error('Send/withdraw asset rows do not use demo balances and market values');
-          if (!html.includes("money(amount)+' '+c[2]+'<small>
+          if (!html.includes('money(usd)') || !html.includes("money(amount)+' '+c[2]")) throw new Error('Send/withdraw asset rows do not display calculated values');
           if (!html.includes('aria-label="Crypto Pay" onclick="openAccountSection(')) throw new Error('Crypto Pay navigation is incorrect');
           if (!worker.includes('status:501')) throw new Error('P2P purchase endpoint is not safely disabled');
           if (!worker.includes('!currencies.includes(currency)')) throw new Error('Payment currency validation is not using the shared currency list');
