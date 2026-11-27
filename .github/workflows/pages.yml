@@ -58,6 +58,38 @@ jobs:
           if (!html.includes('id="depositNetworkIcon"') || !html.includes('id="withdrawNetworkIcon"')) throw new Error('Selected network icon mount is missing');
           if (html.includes('<span class="network-icon">\'+n[0]+\'</span>')) throw new Error('Network list still renders text abbreviations instead of logos');
           if (html.includes('demoBuyQty') || html.includes('submitDemoBuy')) throw new Error('Disabled P2P purchase UI is still present');
+          if (!html.includes('function openPromo(target)')) throw new Error('Wallet promo navigation handler is missing');
+          for (const [promo, screen] of Object.entries({festival:'festival', p2p:'p2p', qr:'qrpay', swap:'exchange'})) {
+            if (!html.includes(promo + ':"' + screen + '"')) throw new Error('Wallet promo route is missing: ' + promo);
+          }
+          if (!html.includes('const amount=Number(demoBalances[c[2]]||0),usd=amount*walletUsdRate(c)')) throw new Error('Send/withdraw asset rows do not use demo balances and market values');
+          if (!html.includes("money(amount)+' '+c[2]+'<small>
+          if (!html.includes('aria-label="Crypto Pay" onclick="openAccountSection(')) throw new Error('Crypto Pay navigation is incorrect');
+          if (!worker.includes('status:501')) throw new Error('P2P purchase endpoint is not safely disabled');
+          if (!worker.includes('!currencies.includes(currency)')) throw new Error('Payment currency validation is not using the shared currency list');
+          console.log('Passed: Worker syntax, combined inline JS syntax, mirrored HTML, screens, history wiring, unique filter, P2P safety and currency validation.');
+          NODE
+          python3 - <<'PY'
+          import sqlite3
+          db = sqlite3.connect(':memory:')
+          db.executescript(open('schema.sql', encoding='utf-8').read())
+          tables = {row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+          expected = {'users', 'balances', 'demo_transactions', 'demo_payments'}
+          assert expected <= tables, f'Missing tables: {expected - tables}'
+          print('Passed: SQLite schema creates all expected tables.')
+          PY
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+          name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Wait for Pages artifact indexing
+        run: sleep 8
+      - id: deployment
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
++money(usd)")) throw new Error('Send/withdraw asset rows do not display calculated values');
+          if (html.includes('id="solana-net-gradient"')) throw new Error('Network SVG uses a duplicate-prone gradient id');
           if (!html.includes('aria-label="Crypto Pay" onclick="openAccountSection(')) throw new Error('Crypto Pay navigation is incorrect');
           if (!worker.includes('status:501')) throw new Error('P2P purchase endpoint is not safely disabled');
           if (!worker.includes('!currencies.includes(currency)')) throw new Error('Payment currency validation is not using the shared currency list');
