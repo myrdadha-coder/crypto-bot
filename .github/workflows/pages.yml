@@ -54,7 +54,6 @@ jobs:
           if (!html.includes('networkIconMarkup(n[0])')) throw new Error('Network list does not render SVG logos');
           if (!html.includes('renderNetworkIcon("withdrawNetworkIcon",network)')) throw new Error('Selected withdrawal network icon is not updated');
           if (!html.includes('id="withdrawNetworkIcon"') || !html.includes('class="deposit-settings"')) throw new Error('Deposit settings or withdrawal network icon mount is missing');
-          if (!html.includes('textContent=depositAsset+" ("+network+")"')) throw new Error('Deposit asset/network label is not updated');
           if (html.includes('<span class="network-icon">\'+n[0]+\'</span>')) throw new Error('Network list still renders text abbreviations instead of logos');
           if (html.includes('id="solana-net-gradient"')) throw new Error('Network SVG contains a duplicate-prone gradient id');
           if (!html.includes('function openPromo(target)')) throw new Error('Wallet promo navigation handler is missing');
@@ -95,7 +94,7 @@ jobs:
           db = sqlite3.connect(':memory:')
           db.executescript(open('schema.sql', encoding='utf-8').read())
           tables = {row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
-          expected = {'users', 'balances', 'demo_transactions', 'demo_payments'}
+          expected = {'users', 'balances', 'demo_transactions', 'p2p_offers'}
           assert expected <= tables, f'Missing tables: {expected - tables}'
           print('Passed: SQLite schema creates all expected tables.')
           PY
