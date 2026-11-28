@@ -115,13 +115,7 @@ async function cancelP2POffer(offerId){
  try{const result=await apiDemo("p2p/cancel",{offerId});await refreshDemoState();await refreshDemoHistory();notice("Объявление снято. Возвращено "+money(result.amount)+" "+result.currency);}
  catch(e){notice(e.message);}
 }
-function openDemoTopup(currency){
- showModal("Получить стартовые средства","Доступно однократное внутреннее начисление 100 USDT.",'<button class="primary" onclick="submitDemoTopup(\''+currency+'\')">Получить 100 USDT</button>');
-}
-async function submitDemoTopup(currency){
- try{const result=await apiDemo("claim",{});closeModal();await refreshDemoState();notice("Зачислено "+money(result.amount)+" "+result.currency);}
- catch(e){notice(e.message);}
-}
+function openDemoTopup(){showModal("Пополнение недоступно","Внешнее пополнение и начисление виртуальных средств не предусмотрены.");}
 async function openDemoBuy(offerId){
  const offer=demoOffersCache.find(x=>x.id===offerId);if(!offer)return;
  if(!confirm("Купить "+money(offer.amount)+" "+offer.currency+" за "+money(Number(offer.amount)*Number(offer.price_usd))+" USDT внутри приложения?"))return;
@@ -1265,7 +1259,7 @@ function selectHistoryFilter(key,value){
  closeModal();renderDemoHistory();
 }
 let previous='wallet';
-function openScreen(id){if(id==='deposit'){openDemoTopup('USDT');return true;}if(id==='withdraw'){showModal('Внешний вывод недоступен','В приложении доступны только внутренние операции. Вывод на внешние адреса не выполняется.');return true;}const target=document.getElementById(id);if(!target||!target.classList.contains('screen'))return false;document.querySelectorAll('.screen').forEach(el=>{el.classList.remove('active');el.hidden=true;});target.hidden=false;target.classList.add('active');document.querySelectorAll('.navbtn').forEach(btn=>{const active=btn.dataset.screen===id;btn.classList.toggle('active',active);btn.setAttribute('aria-selected',String(active));});const back=document.getElementById('back');if(back)back.textContent=['wallet','market','exchange','p2p','profile','festival'].includes(id)?'Закрыть':'‹ Назад';const nav=document.querySelector('.bottom-nav');if(nav)nav.classList.toggle('is-hidden',['send','send-assets','deposit','deposit-networks','withdraw','withdraw-networks','history','deposit-detail','withdraw-detail','qrpay','festival','usdt-game'].includes(id));previous=id;window.scrollTo(0,0);if(id==='history')refreshDemoHistory();return true}
+function openScreen(id){if(id==='deposit'){openDemoTopup();return true;}if(id==='withdraw'){showModal('Внешний вывод недоступен','В приложении доступны только внутренние операции. Вывод на внешние адреса не выполняется.');return true;}const target=document.getElementById(id);if(!target||!target.classList.contains('screen'))return false;document.querySelectorAll('.screen').forEach(el=>{el.classList.remove('active');el.hidden=true;});target.hidden=false;target.classList.add('active');document.querySelectorAll('.navbtn').forEach(btn=>{const active=btn.dataset.screen===id;btn.classList.toggle('active',active);btn.setAttribute('aria-selected',String(active));});const back=document.getElementById('back');if(back)back.textContent=['wallet','market','exchange','p2p','profile','festival'].includes(id)?'Закрыть':'‹ Назад';const nav=document.querySelector('.bottom-nav');if(nav)nav.classList.toggle('is-hidden',['send','send-assets','deposit','deposit-networks','withdraw','withdraw-networks','history','deposit-detail','withdraw-detail','qrpay','festival','usdt-game'].includes(id));previous=id;window.scrollTo(0,0);if(id==='history')refreshDemoHistory();return true}
 function goBack(){const id=document.querySelector('.screen.active')?.id;const backMap={'send-assets':'send','deposit-networks':'deposit','withdraw-networks':'withdraw','deposit-detail':'deposit-networks','withdraw-detail':'withdraw-networks'};if(backMap[id]){openScreen(backMap[id]);return;}if(['send','deposit','withdraw','history','qrpay','festival','usdt-game'].includes(id)){openScreen('wallet');return;}if(id&&['wallet','market','exchange','p2p','profile'].includes(id)){try{Telegram.WebApp.close();}catch(e){openScreen('wallet');}return;}openScreen('wallet');}
 document.querySelectorAll('.navbtn').forEach(b=>b.addEventListener('click',()=>openScreen(b.dataset.screen)));
 document.querySelectorAll('.filter').forEach(b=>b.addEventListener('click',()=>{b.parentElement.querySelectorAll('.filter').forEach(x=>x.classList.remove('active'));b.classList.add('active');showModal('Фильтр', 'Фильтр «'+b.textContent.trim()+'» выбран. Данные операций появятся после подключения истории транзакций.')}));
@@ -1296,10 +1290,10 @@ async function reviewDemoSend(){
  catch(e){notice(e.message);}
 }
 function networkTitle(network){return networkCatalog[network]?.detail||network;}
-function openDemoDeposit(asset){depositAsset=asset;openDemoTopup(asset);}
+function openDemoDeposit(asset){depositAsset=asset;openDemoTopup();}
 function setDepositNetwork(network){showModal("Внешнее пополнение недоступно","В приложении нет блокчейн-адресов или внешних депозитов. Используйте внутреннее начисление.");}
 function chooseDepositNetwork(){document.getElementById("depositNetworkAsset").textContent=depositAsset;document.getElementById("depositNetworkList").innerHTML=networkRows("deposit");openScreen("deposit-networks");}
-function copyDemoAddress(){showModal("Внутренний баланс","Внешние адреса и блокчейн-пополнения не используются. Получить стартовые средства можно через внутреннее начисление.");}
+function copyDemoAddress(){showModal("Пополнение недоступно","Внешние адреса и блокчейн-пополнения не используются.");}
 function openDemoWithdraw(asset){withdrawAsset=asset;const choices=networkChoicesForAsset(asset);if(!choices.length){notice("Для этого актива нет подтверждённой сети вывода в демо-списке.");return;}withdrawNetwork=choices[0][0];document.getElementById("withdrawAssetLabel").textContent=asset;document.getElementById("withdrawAvailable").textContent=money(demoBalances[asset]||0)+" "+asset;document.getElementById("withdrawNetworkLabel").textContent=networkTitle(withdrawNetwork);renderNetworkIcon("withdrawNetworkIcon",withdrawNetwork);openScreen("withdraw-detail");}
 function chooseWithdrawNetwork(){document.getElementById("withdrawNetworkAsset").textContent=withdrawAsset;document.getElementById("withdrawNetworkList").innerHTML=networkRows("withdraw");openScreen("withdraw-networks");}
 function setWithdrawNetwork(network){withdrawNetwork=network;document.getElementById("withdrawNetworkLabel").textContent=networkTitle(network);renderNetworkIcon("withdrawNetworkIcon",network);openScreen("withdraw-detail");}
@@ -1390,7 +1384,7 @@ if (targetScreen && document.getElementById(targetScreen)) {
  } else if(requestedScreen==="giveaway-create" || requestedScreen==="subscriptions-connect" || requestedScreen?.startsWith("pay-")){
   showModal("Crypto Bot","Раздел");
  } else if(requestedScreen==="wallet-topup"){
-  openDemoTopup("USDT");
+  openDemoTopup();
  } else if(requestedScreen==="wallet-withdraw"){
   showModal("Вывод USDT","Вывод USDT.");
  }
