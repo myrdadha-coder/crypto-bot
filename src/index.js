@@ -1,11 +1,4 @@
 
-const demoOffers = [
- {id:"offer-1",name:"mazzz",country:"🇷🇺 RU",deals:35,rating:"97.14%",price:85.98,available:698,limits:"40K – 45K RUB",payment:"СБП",minutes:15},
- {id:"offer-2",name:"CryptoSonic",country:"🇷🇺 RU",deals:13,rating:"100.00%",price:85.99,available:84,limits:"7.24K RUB",payment:"Сбербанк",minutes:15},
- {id:"offer-3",name:"Tribal Hyena",country:"🇺🇦 UA",deals:7,rating:"100.00%",price:88.57,available:240,limits:"11K RUB",payment:"СБП",minutes:15},
- {id:"offer-4",name:"FastHub",country:"🇷🇺 RU",deals:25,rating:"100.00%",price:88.65,available:1646,limits:"20K – 145.98K RUB",payment:"СБП, Т-Банк",minutes:15}
-];
-
 const currencies = ["USDT", "GRAM", "SOL", "TRX", "BTC", "ETH", "LTC", "BNB", "USDC", "XAUT"];
 
 export default {
@@ -14,7 +7,7 @@ export default {
     if (request.method === "OPTIONS" && url.pathname.startsWith("/api/")) return new Response(null, {status:204,headers:corsHeaders()});
 
     if (url.pathname === "/health" && request.method === "GET") {
-      return Response.json({ ok: true, service: "crypto-bot", mode: "demo" });
+      return Response.json({ ok: true, service: "crypto-bot", mode: "virtual" });
     }
 
     if (url.pathname === "/webhook") {
@@ -46,40 +39,82 @@ export default {
       await env.DB.prepare("INSERT OR IGNORE INTO users(user_id,first_name) VALUES(?,?)").bind(userId, user.first_name || "").run();
       if (url.pathname === "/api/demo/state" && request.method === "GET") {
         const rows = await env.DB.prepare("SELECT currency,amount FROM balances WHERE user_id=?").bind(userId).all();
-        return demoJson({ mode: "demo", balances: Object.fromEntries(rows.results.map(row => [row.currency, row.amount])), offers: demoOffers }, request);
+        const offers = await env.DB.prepare("SELECT offer_id AS id,seller_id,currency,amount,price_usd,created_at FROM p2p_offers WHERE status='open' AND seller_id<>? ORDER BY created_at DESC LIMIT 50").bind(userId).all();
+        return demoJson({ mode: "virtual", balances: Object.fromEntries(rows.results.map(row => [row.currency, row.amount])), offers: offers.results }, request);
       }
-      if (url.pathname === "/api/demo/payment/create" && request.method === "POST") {
-        const body = await request.json().catch(() => ({}));
-        const amount = Number(body.amount), currency = String(body.currency || "USDT").toUpperCase();
-        const cardNumber = String(body.cardNumber || "").replace(/\D/g, "");
-        const expiry = String(body.expiry || ""), cvv = String(body.cvv || "");
-        const validTestCard = cardNumber === "4242424242424242" && expiry === "12/30" && cvv === "123";
-        const validAmount = Number.isFinite(amount) && amount >= 0.01 && amount <= 100000 && Math.round(amount * 100000000) / 100000000 === amount;
-        if (!currencies.includes(currency) || !validAmount || !validTestCard) {
-          return demoJson({ error:"Платёж отклонён. Доступна только тестовая карта 4242 4242 4242 4242, срок 12/30, CVV 123. Проверь сумму. Реальные карты не принимаются." },request,{status:400});
-        }
-        const paymentId = crypto.randomUUID();
-        await env.DB.prepare("INSERT INTO demo_payments(payment_id,user_id,currency,amount,status,card_last4,created_at) VALUES(?,?,?,?,?,?,?)").bind(paymentId,userId,currency,amount,"pending","4242",Date.now()).run();
-        return demoJson({ok:true,paymentId,status:"pending",message:"Платёж создан. Ожидает проверки."},request);
-      }
-      if (url.pathname === "/api/demo/payment/confirm" && request.method === "POST") {
-        const body = await request.json().catch(() => ({}));
-        const paymentId = String(body.paymentId || "");
-        const payment = await env.DB.prepare("SELECT payment_id,currency,amount,status FROM demo_payments WHERE payment_id=? AND user_id=?").bind(paymentId,userId).first();
-        if (!payment) return demoJson({error:"Платёж не найден"},request,{status:404});
-        if (payment.status === "paid") return demoJson({ok:true,status:"paid",currency:payment.currency,amount:payment.amount,alreadyPaid:true},request);
-        if (payment.status !== "pending") return demoJson({error:"Платёж уже обработан"},request,{status:409});
-        const now=Date.now();
-        const result=await env.DB.batch([
-          env.DB.prepare("INSERT INTO balances(user_id,currency,amount) SELECT user_id,currency,amount FROM demo_payments WHERE payment_id=? AND user_id=? AND status='pending' ON CONFLICT(user_id,currency) DO UPDATE SET amount=amount+excluded.amount").bind(paymentId,userId),
-          env.DB.prepare("INSERT INTO demo_transactions(user_id,kind,currency,amount,details,created_at) SELECT user_id,'demo_card_topup',currency,amount,?,? FROM demo_payments WHERE payment_id=? AND user_id=? AND status='pending'").bind(JSON.stringify({paymentId,cardLast4:"4242",test:true}),now,paymentId,userId),
-          env.DB.prepare("UPDATE demo_payments SET status='paid',paid_at=? WHERE payment_id=? AND user_id=? AND status='pending'").bind(now,paymentId,userId)
+      if (url.pathname === "/api/demo/claim" && request.method === "POST") {
+        const existing = await env.DB.prepare("SELECT id FROM demo_transactions WHERE user_id=? AND kind='starter_credit' LIMIT 1").bind(userId).first();
+        if (existing) return demoJson({error:"Стартовые средства уже получены."},request,{status:409});
+        const now=Date.now(), amount=100;
+        await env.DB.batch([
+          env.DB.prepare("INSERT INTO balances(user_id,currency,amount) VALUES(?,'USDT',?) ON CONFLICT(user_id,currency) DO UPDATE SET amount=amount+excluded.amount").bind(userId,amount),
+          env.DB.prepare("INSERT INTO demo_transactions(user_id,kind,currency,amount,details,created_at) VALUES(?,'starter_credit','USDT',?,'{}',?)").bind(userId,amount,now)
         ]);
-        if (!result[0]?.meta?.changes) return demoJson({error:"Платёж уже подтверждён"},request,{status:409});
-        return demoJson({ok:true,status:"paid",currency:payment.currency,amount:payment.amount},request);
+        return demoJson({ok:true,currency:"USDT",amount},request);
       }
-      if (url.pathname === "/api/demo/buy" && request.method === "POST") {
-        return demoJson({error:"Покупка через P2P не подключена. Баланс не изменён."},request,{status:501});
+      if (url.pathname === "/api/demo/swap" && request.method === "POST") {
+        const body=await request.json().catch(()=>({}));
+        const from=String(body.from||"").toUpperCase(),to=String(body.to||"").toUpperCase(),amount=Number(body.amount);
+        if(!currencies.includes(from)||!currencies.includes(to)||from===to||!Number.isFinite(amount)||amount<=0||amount>1e12||Math.round(amount*1e8)/1e8!==amount) return demoJson({error:"Проверь валюты и сумму."},request,{status:400});
+        const ids={USDT:"tether",GRAM:"the-open-network",SOL:"solana",TRX:"tron",BTC:"bitcoin",ETH:"ethereum",LTC:"litecoin",BNB:"binancecoin",USDC:"usd-coin",XAUT:"tether-gold"};
+        const response=await fetch("https://api.coingecko.com/api/v3/simple/price?ids="+encodeURIComponent([...new Set([ids[from],ids[to]])].join(","))+"&vs_currencies=usd");
+        if(!response.ok)return demoJson({error:"Рыночный курс временно недоступен."},request,{status:503});
+        const prices=await response.json(),fromRate=Number(prices[ids[from]]?.usd),toRate=Number(prices[ids[to]]?.usd);
+        if(!(fromRate>0)||!(toRate>0))return demoJson({error:"Не удалось получить курс для выбранной пары."},request,{status:503});
+        const received=Math.floor((amount*fromRate/toRate)*1e8)/1e8;
+        if(!(received>0)||!Number.isFinite(received))return demoJson({error:"Слишком малая сумма обмена."},request,{status:400});
+        const now=Date.now(),details=JSON.stringify({from,to,rate:fromRate/toRate});
+        const result=await env.DB.batch([
+          env.DB.prepare("UPDATE balances SET amount=amount-? WHERE user_id=? AND currency=? AND amount>=?").bind(amount,userId,from,amount),
+          env.DB.prepare("INSERT INTO balances(user_id,currency,amount) SELECT ?,?,? WHERE changes()>0 ON CONFLICT(user_id,currency) DO UPDATE SET amount=amount+excluded.amount").bind(userId,to,received),
+          env.DB.prepare("INSERT INTO demo_transactions(user_id,kind,currency,amount,details,created_at) SELECT ?,'swap_out',?,?,?,? WHERE changes()>0").bind(userId,from,amount,details,now),
+          env.DB.prepare("INSERT INTO demo_transactions(user_id,kind,currency,amount,details,created_at) SELECT ?,'swap_in',?,?,?,? WHERE changes()>0").bind(userId,to,received,details,now)
+        ]);
+        if(!result[0]?.meta?.changes)return demoJson({error:"Недостаточно средств."},request,{status:400});
+        return demoJson({ok:true,from,to,spent:amount,received},request);
+      }
+      if (url.pathname === "/api/demo/transfer" && request.method === "POST") {
+        const body=await request.json().catch(()=>({}));
+        const recipient=String(body.recipient||"").trim(),currency=String(body.currency||"").toUpperCase(),amount=Number(body.amount);
+        if(!/^\\d{5,20}$/.test(recipient)||recipient===userId||!currencies.includes(currency)||!Number.isFinite(amount)||amount<=0||amount>1e12||Math.round(amount*1e8)/1e8!==amount)return demoJson({error:"Проверь Telegram ID, валюту и сумму."},request,{status:400});
+        const target=await env.DB.prepare("SELECT user_id FROM users WHERE user_id=?").bind(recipient).first();
+        if(!target)return demoJson({error:"Получатель ещё не запускал этого бота."},request,{status:404});
+        const now=Date.now(),details=JSON.stringify({recipient});
+        const result=await env.DB.batch([
+          env.DB.prepare("UPDATE balances SET amount=amount-? WHERE user_id=? AND currency=? AND amount>=?").bind(amount,userId,currency,amount),
+          env.DB.prepare("INSERT INTO balances(user_id,currency,amount) SELECT ?,?,? WHERE changes()>0 ON CONFLICT(user_id,currency) DO UPDATE SET amount=amount+excluded.amount").bind(recipient,currency,amount),
+          env.DB.prepare("INSERT INTO demo_transactions(user_id,kind,currency,amount,details,created_at) SELECT ?,'transfer_out',?,?,?,? WHERE changes()>0").bind(userId,currency,amount,details,now),
+          env.DB.prepare("INSERT INTO demo_transactions(user_id,kind,currency,amount,details,created_at) SELECT ?,'transfer_in',?,?,?,? WHERE changes()>0").bind(recipient,currency,amount,JSON.stringify({sender:userId}),now)
+        ]);
+        if(!result[0]?.meta?.changes)return demoJson({error:"Недостаточно средств."},request,{status:400});
+        return demoJson({ok:true,recipient,currency,amount},request);
+      }
+      if (url.pathname === "/api/demo/p2p/offer" && request.method === "POST") {
+        const body=await request.json().catch(()=>({}));
+        const currency=String(body.currency||"").toUpperCase(),amount=Number(body.amount),price=Number(body.priceUsd);
+        if(!currencies.includes(currency)||currency==="USDT"||!Number.isFinite(amount)||amount<=0||amount>1e9||Math.round(amount*1e8)/1e8!==amount||!Number.isFinite(price)||price<=0||price>1e9)return demoJson({error:"Проверь валюту, количество и цену в USDT."},request,{status:400});
+        const available=await env.DB.prepare("SELECT amount FROM balances WHERE user_id=? AND currency=?").bind(userId,currency).first();
+        if(!available||Number(available.amount)<amount)return demoJson({error:"Недостаточно средств для объявления."},request,{status:400});
+        const id=crypto.randomUUID();
+        await env.DB.prepare("INSERT INTO p2p_offers(offer_id,seller_id,currency,amount,price_usd,status,created_at) VALUES(?,?,?,?,?,'open',?)").bind(id,userId,currency,amount,price,Date.now()).run();
+        return demoJson({ok:true,offerId:id},request);
+      }
+      if (url.pathname === "/api/demo/p2p/buy" && request.method === "POST") {
+        const body=await request.json().catch(()=>({}));
+        const id=String(body.offerId||""),offer=await env.DB.prepare("SELECT offer_id,seller_id,currency,amount,price_usd FROM p2p_offers WHERE offer_id=? AND status='open'").bind(id).first();
+        if(!offer||offer.seller_id===userId)return demoJson({error:"Объявление недоступно."},request,{status:404});
+        const quote=Math.ceil(Number(offer.amount)*Number(offer.price_usd)*1e8)/1e8,now=Date.now();
+        const result=await env.DB.batch([
+          env.DB.prepare("UPDATE p2p_offers SET status='filled' WHERE offer_id=? AND status='open'").bind(id),
+          env.DB.prepare("UPDATE balances SET amount=amount-? WHERE user_id=? AND currency='USDT' AND amount>=? AND changes()>0").bind(quote,userId,quote),
+          env.DB.prepare("UPDATE balances SET amount=amount-? WHERE user_id=? AND currency=? AND amount>=? AND changes()>0").bind(offer.amount,offer.seller_id,offer.currency,offer.amount),
+          env.DB.prepare("INSERT INTO balances(user_id,currency,amount) SELECT ?,?,? WHERE changes()>0 ON CONFLICT(user_id,currency) DO UPDATE SET amount=amount+excluded.amount").bind(userId,offer.currency,offer.amount),
+          env.DB.prepare("INSERT INTO balances(user_id,currency,amount) SELECT ?, 'USDT', ? WHERE changes()>0 ON CONFLICT(user_id,currency) DO UPDATE SET amount=amount+excluded.amount").bind(offer.seller_id,quote),
+          env.DB.prepare("INSERT INTO demo_transactions(user_id,kind,currency,amount,details,created_at) SELECT ?,'p2p_buy',?,?,?,? WHERE changes()>0").bind(userId,offer.currency,offer.amount,JSON.stringify({offerId:id,quote}),now),
+          env.DB.prepare("INSERT INTO demo_transactions(user_id,kind,currency,amount,details,created_at) SELECT ?,'p2p_sell',?,?,?,? WHERE changes()>0").bind(offer.seller_id,'USDT',quote,JSON.stringify({offerId:id}),now)
+        ]);
+        if(!result[0]?.meta?.changes||!result[1]?.meta?.changes||!result[2]?.meta?.changes)return demoJson({error:"Сделка не состоялась: проверьте балансы или объявление."},request,{status:409});
+        return demoJson({ok:true,currency:offer.currency,amount:offer.amount,paid:quote},request);
       }
       if (url.pathname === "/api/demo/history" && request.method === "GET") {
         const rows = await env.DB.prepare("SELECT kind,currency,amount,details,created_at FROM demo_transactions WHERE user_id=? ORDER BY created_at DESC LIMIT 100").bind(userId).all();
@@ -164,8 +199,8 @@ async function handleUpdate(update, env) {
     ).bind(userId).all();
 
     return send(env, userId, rows.results.length
-      ? "Твой демо-баланс:\n" + rows.results.map(row => row.currency + ": " + row.amount).join("\n")
-      : "Демо-баланс пока пуст."
+      ? "Твой баланс:\n" + rows.results.map(row => row.currency + ": " + row.amount).join("\n")
+      : "Баланс пока пуст."
     );
   }
 
@@ -199,7 +234,7 @@ async function handleUpdate(update, env) {
     ).bind(userId, currency).first();
 
     return send(env, userId,
-      "Начислено в демо-режиме: +" + amount + " " + currency +
+      "Начислено: +" + amount + " " + currency +
       "\nНовый баланс: " + row.amount + " " + currency
     );
   }
