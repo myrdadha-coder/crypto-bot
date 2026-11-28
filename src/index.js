@@ -43,16 +43,6 @@ export default {
         const myOffers = await env.DB.prepare("SELECT offer_id AS id,currency,amount,price_usd,status,created_at FROM p2p_offers WHERE seller_id=? AND status='open' ORDER BY created_at DESC LIMIT 50").bind(userId).all();
         return demoJson({ mode: "virtual", balances: Object.fromEntries(rows.results.map(row => [row.currency, row.amount])), offers: offers.results, myOffers: myOffers.results }, request);
       }
-      if (url.pathname === "/api/demo/claim" && request.method === "POST") {
-        const existing = await env.DB.prepare("SELECT id FROM demo_transactions WHERE user_id=? AND kind='starter_credit' LIMIT 1").bind(userId).first();
-        if (existing) return demoJson({error:"Стартовые средства уже получены."},request,{status:409});
-        const now=Date.now(), amount=100;
-        await env.DB.batch([
-          env.DB.prepare("INSERT INTO balances(user_id,currency,amount) VALUES(?,'USDT',?) ON CONFLICT(user_id,currency) DO UPDATE SET amount=amount+excluded.amount").bind(userId,amount),
-          env.DB.prepare("INSERT INTO demo_transactions(user_id,kind,currency,amount,details,created_at) VALUES(?,'starter_credit','USDT',?,'{}',?)").bind(userId,amount,now)
-        ]);
-        return demoJson({ok:true,currency:"USDT",amount},request);
-      }
       if (url.pathname === "/api/demo/swap" && request.method === "POST") {
         const body=await request.json().catch(()=>({}));
         const from=String(body.from||"").toUpperCase(),to=String(body.to||"").toUpperCase(),amount=Number(body.amount);
