@@ -40,7 +40,8 @@ export default {
       if (url.pathname === "/api/demo/state" && request.method === "GET") {
         const rows = await env.DB.prepare("SELECT currency,amount FROM balances WHERE user_id=?").bind(userId).all();
         const offers = await env.DB.prepare("SELECT offer_id AS id,seller_id,currency,amount,price_usd,created_at FROM p2p_offers WHERE status='open' AND seller_id<>? ORDER BY created_at DESC LIMIT 50").bind(userId).all();
-        return demoJson({ mode: "virtual", balances: Object.fromEntries(rows.results.map(row => [row.currency, row.amount])), offers: offers.results }, request);
+        const myOffers = await env.DB.prepare("SELECT offer_id AS id,currency,amount,price_usd,status,created_at FROM p2p_offers WHERE seller_id=? AND status='open' ORDER BY created_at DESC LIMIT 50").bind(userId).all();
+        return demoJson({ mode: "virtual", balances: Object.fromEntries(rows.results.map(row => [row.currency, row.amount])), offers: offers.results, myOffers: myOffers.results }, request);
       }
       if (url.pathname === "/api/demo/claim" && request.method === "POST") {
         const existing = await env.DB.prepare("SELECT id FROM demo_transactions WHERE user_id=? AND kind='starter_credit' LIMIT 1").bind(userId).first();
@@ -101,6 +102,20 @@ export default {
         ]);
         if(!result[0]?.meta?.changes)return demoJson({error:"Недостаточно средств для объявления."},request,{status:400});
         return demoJson({ok:true,offerId:id},request);
+      }
+      if (url.pathname === "/api/demo/p2p/cancel" && request.method === "POST") {
+        const body=await request.json().catch(()=>({}));
+        const id=String(body.offerId||"");
+        const offer=await env.DB.prepare("SELECT currency,amount FROM p2p_offers WHERE offer_id=? AND seller_id=? AND status='open'").bind(id,userId).first();
+        if(!offer)return demoJson({error:"Объявление уже закрыто или не найдено."},request,{status:404});
+        const now=Date.now();
+        const result=await env.DB.batch([
+          env.DB.prepare("UPDATE p2p_offers SET status='cancelled' WHERE offer_id=? AND seller_id=? AND status='open'").bind(id,userId),
+          env.DB.prepare("INSERT INTO balances(user_id,currency,amount) SELECT ?,?,? WHERE changes()>0 ON CONFLICT(user_id,currency) DO UPDATE SET amount=amount+excluded.amount").bind(userId,offer.currency,offer.amount),
+          env.DB.prepare("INSERT INTO demo_transactions(user_id,kind,currency,amount,details,created_at) SELECT ?,'p2p_offer_return',?,?,?,? WHERE changes()>0").bind(userId,offer.currency,offer.amount,JSON.stringify({offerId:id}),now)
+        ]);
+        if(!result[0]?.meta?.changes)return demoJson({error:"Объявление уже обработано."},request,{status:409});
+        return demoJson({ok:true,currency:offer.currency,amount:offer.amount},request);
       }
       if (url.pathname === "/api/demo/p2p/buy" && request.method === "POST") {
         const body=await request.json().catch(()=>({}));
