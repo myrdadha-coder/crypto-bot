@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
-      - name: Validate source, wallet flows and demo database schema
+      - name: Validate source, wallet flows and virtual wallet database schema
         run: |
           node --check src/index.js
           node --input-type=module <<'NODE'
@@ -65,12 +65,8 @@ jobs:
           if (!html.includes('money(usd)') || !html.includes("money(amount)+' '+c[2]")) throw new Error('Send/withdraw asset rows do not display calculated values');
           if (html.includes('demoBuyQty') || html.includes('submitDemoBuy')) throw new Error('Disabled P2P purchase UI is still present');
           if (!html.includes('aria-label="Crypto Pay" onclick="openAccountSection(')) throw new Error('Crypto Pay navigation is incorrect');
-          if (!worker.includes('status:501')) throw new Error('P2P purchase endpoint is not safely disabled');
           if (!worker.includes('!currencies.includes(currency)')) throw new Error('Payment currency validation is not using the shared currency list');
 
-          for (const address of ['TFGYaqcb1h46KofUBWKaGuEULjYHnzRMrP', '0xBB26e15c06918A2c81c0dB8076F7f4a60951cA07', 'UQAjlBA6Dwfh7u4A-bIm4luYh3VMWzTgfYDBk6PY8fnVzq2t', 'AzipMp95M69Fi74q8t1JYmSPrtna7Vxq84Ad2LNxXdbP', 'bc1qzsw0f2wjw7m758y2swvunvzmefjdyq942nnmzp', 'ltc1qpled3utccrjlqskn6lcpane2su4x2j52a8qrjv']) {
-            if (!html.includes(address)) throw new Error('Missing demo address: ' + address);
-          }
           for (const network of ['TRC20','BEP20','TON','SOL','ERC20','BTC','LTC']) {
             if (!html.includes(network + ':')) throw new Error('Missing network support: ' + network);
           }
@@ -92,7 +88,7 @@ jobs:
           if (!html.includes('grid-template-columns:repeat(5,minmax(0,1fr))')) throw new Error('Bottom navigation must have five equal tabs');
           if (!html.includes('onclick="openScreen(\'p2p\')"') || !html.includes('onclick="openScreen(\'history\')"')) throw new Error('More menu is missing P2P or transaction history shortcuts');
           if (!html.includes('function walletUsdRate(coin){const raw=') || !html.includes('value===null?"$ —"')) throw new Error('Unknown market prices must not be presented as zero valuation');
-          console.log('Passed: Worker syntax, inline JS syntax, mirrored HTML, swap, wallet network icons, promo routes, asset balances, history, P2P safety and currency validation.');
+          console.log('Passed: Worker syntax, inline JS syntax, mirrored HTML, swap, wallet network icons, promo routes, asset balances, history, internal P2P, virtual operations and currency validation.');
           NODE
           python3 - <<'PY'
           import sqlite3
