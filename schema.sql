@@ -33,3 +33,14 @@ CREATE TABLE IF NOT EXISTS demo_payments (
 );
 CREATE INDEX IF NOT EXISTS idx_demo_payments_user_created
 ON demo_payments(user_id, created_at DESC);
+
+CREATE TABLE IF NOT EXISTS p2p_offers (
+  offer_id TEXT PRIMARY KEY,
+  seller_id TEXT NOT NULL,
+  currency TEXT NOT NULL,
+  amount REAL NOT NULL,
+  price_usd REAL NOT NULL,
+  status TEXT NOT NULL DEFAULT 'open',
+  created_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_p2p_offers_status_created ON p2p_offers(status, created_at DESC);
