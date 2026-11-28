@@ -10,6 +10,7 @@
 const tgApp = window.Telegram?.WebApp;
 const demoHeaders = () => ({ "content-type":"application/json", "X-Telegram-Init-Data": tgApp?.initData || "" });
 let demoOffersCache = [];
+let demoMyOffersCache = [];
 let demoBalances = {};
 let demoHistoryCache = [];
 let historyFilters = { type:"Все операции", coin:"Все монеты", period:"За всё время" };
@@ -67,7 +68,7 @@ async function refreshDemoHistory(){
 async function refreshDemoState(){
   try{
     const state=await apiDemo("state");
-    demoBalances=state.balances||{};demoOffersCache=state.offers||[];
+    demoBalances=state.balances||{};demoOffersCache=state.offers||[];demoMyOffersCache=state.myOffers||[];
     refreshWalletAssetBalances();
     renderP2P();
   }catch(e){console.warn("Demo state unavailable:",e.message);}
@@ -101,9 +102,18 @@ function renderP2P(){
   root.querySelectorAll("[data-offer-id]").forEach(b=>b.addEventListener("click",()=>openDemoBuy(b.dataset.offerId)));
   return;
  }
- if(count)count.textContent="0 сделок";
- if(label)label.textContent="Сделок пока нет.";
- root.hidden=true;if(empty)empty.hidden=false;
+ if(count)count.textContent=demoMyOffersCache.length+" моих объявл.";
+ if(!demoMyOffersCache.length){if(label)label.textContent="У вас пока нет открытых объявлений.";root.hidden=true;if(empty)empty.hidden=false;return;}
+ root.innerHTML=demoMyOffersCache.map(o=>{
+  const id=escapeDemoHtml(o.id),currency=escapeDemoHtml(o.currency);
+  return '<article class="p2p-card"><div class="p2p-top"><div class="p2p-user"><div class="p2p-avatar">↗</div><div><div class="p2p-name">Ваше объявление · '+currency+'</div><div class="p2p-meta">Актив зарезервирован</div></div></div><div class="p2p-price">'+money(o.price_usd)+' USDT<small>за 1 '+currency+'</small></div></div><div class="p2p-info"><span>Количество</span><span>'+money(o.amount)+' '+currency+'</span><span>Всего</span><span>'+money(Number(o.amount)*Number(o.price_usd))+' USDT</span></div><button class="p2p-buy" type="button" data-cancel-offer="'+id+'">Снять объявление</button></article>';
+ }).join("");
+ root.hidden=false;if(empty)empty.hidden=true;
+ root.querySelectorAll("[data-cancel-offer]").forEach(b=>b.addEventListener("click",()=>cancelP2POffer(b.dataset.cancelOffer)));
+}
+async function cancelP2POffer(offerId){
+ try{const result=await apiDemo("p2p/cancel",{offerId});await refreshDemoState();await refreshDemoHistory();notice("Объявление снято. Возвращено "+money(result.amount)+" "+result.currency);}
+ catch(e){notice(e.message);}
 }
 function openDemoTopup(currency){
  showModal("Получить стартовые средства","Доступно однократное внутреннее начисление 100 USDT.",'<button class="primary" onclick="submitDemoTopup(\''+currency+'\')">Получить 100 USDT</button>');
