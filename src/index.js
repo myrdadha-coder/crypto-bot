@@ -93,27 +93,30 @@ export default {
         const body=await request.json().catch(()=>({}));
         const currency=String(body.currency||"").toUpperCase(),amount=Number(body.amount),price=Number(body.priceUsd);
         if(!currencies.includes(currency)||currency==="USDT"||!Number.isFinite(amount)||amount<=0||amount>1e9||Math.round(amount*1e8)/1e8!==amount||!Number.isFinite(price)||price<=0||price>1e9)return demoJson({error:"Проверь валюту, количество и цену в USDT."},request,{status:400});
-        const available=await env.DB.prepare("SELECT amount FROM balances WHERE user_id=? AND currency=?").bind(userId,currency).first();
-        if(!available||Number(available.amount)<amount)return demoJson({error:"Недостаточно средств для объявления."},request,{status:400});
-        const id=crypto.randomUUID();
-        await env.DB.prepare("INSERT INTO p2p_offers(offer_id,seller_id,currency,amount,price_usd,status,created_at) VALUES(?,?,?,?,?,'open',?)").bind(id,userId,currency,amount,price,Date.now()).run();
+        const id=crypto.randomUUID(),now=Date.now();
+        const result=await env.DB.batch([
+          env.DB.prepare("UPDATE balances SET amount=amount-? WHERE user_id=? AND currency=? AND amount>=?").bind(amount,userId,currency,amount),
+          env.DB.prepare("INSERT INTO p2p_offers(offer_id,seller_id,currency,amount,price_usd,status,created_at) SELECT ?,?,?,?,?, 'open',? WHERE changes()>0").bind(id,userId,currency,amount,price,now),
+          env.DB.prepare("INSERT INTO demo_transactions(user_id,kind,currency,amount,details,created_at) SELECT ?,'p2p_offer_lock',?,?,?,? WHERE changes()>0").bind(userId,currency,amount,JSON.stringify({offerId:id}),now)
+        ]);
+        if(!result[0]?.meta?.changes)return demoJson({error:"Недостаточно средств для объявления."},request,{status:400});
         return demoJson({ok:true,offerId:id},request);
       }
       if (url.pathname === "/api/demo/p2p/buy" && request.method === "POST") {
         const body=await request.json().catch(()=>({}));
-        const id=String(body.offerId||""),offer=await env.DB.prepare("SELECT offer_id,seller_id,currency,amount,price_usd FROM p2p_offers WHERE offer_id=? AND status='open'").bind(id).first();
+        const id=String(body.offerId||"");
+        const offer=await env.DB.prepare("SELECT offer_id,seller_id,currency,amount,price_usd FROM p2p_offers WHERE offer_id=? AND status='open'").bind(id).first();
         if(!offer||offer.seller_id===userId)return demoJson({error:"Объявление недоступно."},request,{status:404});
         const quote=Math.ceil(Number(offer.amount)*Number(offer.price_usd)*1e8)/1e8,now=Date.now();
         const result=await env.DB.batch([
-          env.DB.prepare("UPDATE p2p_offers SET status='filled' WHERE offer_id=? AND status='open'").bind(id),
+          env.DB.prepare("UPDATE p2p_offers SET status='filled' WHERE offer_id=? AND status='open' AND EXISTS(SELECT 1 FROM balances WHERE user_id=? AND currency='USDT' AND amount>=?)").bind(id,userId,quote),
           env.DB.prepare("UPDATE balances SET amount=amount-? WHERE user_id=? AND currency='USDT' AND amount>=? AND changes()>0").bind(quote,userId,quote),
-          env.DB.prepare("UPDATE balances SET amount=amount-? WHERE user_id=? AND currency=? AND amount>=? AND changes()>0").bind(offer.amount,offer.seller_id,offer.currency,offer.amount),
           env.DB.prepare("INSERT INTO balances(user_id,currency,amount) SELECT ?,?,? WHERE changes()>0 ON CONFLICT(user_id,currency) DO UPDATE SET amount=amount+excluded.amount").bind(userId,offer.currency,offer.amount),
           env.DB.prepare("INSERT INTO balances(user_id,currency,amount) SELECT ?, 'USDT', ? WHERE changes()>0 ON CONFLICT(user_id,currency) DO UPDATE SET amount=amount+excluded.amount").bind(offer.seller_id,quote),
           env.DB.prepare("INSERT INTO demo_transactions(user_id,kind,currency,amount,details,created_at) SELECT ?,'p2p_buy',?,?,?,? WHERE changes()>0").bind(userId,offer.currency,offer.amount,JSON.stringify({offerId:id,quote}),now),
           env.DB.prepare("INSERT INTO demo_transactions(user_id,kind,currency,amount,details,created_at) SELECT ?,'p2p_sell',?,?,?,? WHERE changes()>0").bind(offer.seller_id,'USDT',quote,JSON.stringify({offerId:id}),now)
         ]);
-        if(!result[0]?.meta?.changes||!result[1]?.meta?.changes||!result[2]?.meta?.changes)return demoJson({error:"Сделка не состоялась: проверьте балансы или объявление."},request,{status:409});
+        if(!result[0]?.meta?.changes||!result[1]?.meta?.changes)return demoJson({error:"Сделка не состоялась: недостаточно USDT или объявление уже купили."},request,{status:409});
         return demoJson({ok:true,currency:offer.currency,amount:offer.amount,paid:quote},request);
       }
       if (url.pathname === "/api/demo/history" && request.method === "GET") {
